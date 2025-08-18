@@ -1,0 +1,35 @@
+{
+  "_id": {
+    "$oid": "669b7497d67ba44cd6e18e46"
+  },
+  "encryptJobId": "142cce4792a256151HF709u7F1BQ",
+  "activeTimeDesc": "本月活跃",
+  "address": "无锡新吴区力之鑫职介(后宅九店)504",
+  "atsDirectPost": false,
+  "atsProxyJob": false,
+  "bossAvatar": "https://img.bosszhipin.com/boss/avatar/avatar_15.png",
+  "bossName": "怀先生",
+  "bossTitle": "技术总监",
+  "brandName": "卓智星",
+  "canAddFriend": true,
+  "certificated": true,
+  "cityName": "无锡",
+  "degreeName": "大专",
+  "encryptUserId": "f64d0bdbe14a9d561HJ50t67FFI~",
+  "experienceName": "经验不限",
+  "friendStatus": 0,
+  "isInterested": 0,
+  "jobLabels": [
+    "Python",
+    "MySQL",
+    "PostgreSQL"
+  ],
+  "jobName": "Vue, Python",
+  "lid": "8nY1qv8NiP4.search.1",
+  "login": false,
+  "online": false,
+  "postDescription": "工作周期：长期兼职\r\n每周工期：3-4天\r\n工作时间：不限\r\n工作时段：不限\r\n结算方式：完工结\r\n招聘截止时间：2024-06-21\r\nVue.js+uniapp+Python，接学生的一些毕业设计  基本一个毕设到手七八百， 大量招人 ，只要你做的速度快就有高收入，居家办公，月入过万不是梦！\n技术要求：\n1.Web开发框架，如Django、Flask等来构建用户界面和后端逻辑\n2.HTTP请求和响应，了解如何使用Python发送HTTP请求和处理HTTP响应\n3.数据库操作，进行数据库操作（SQLite、MySQL、ostgreSQL等）\n4.安全漏洞扫描技术，如SQL注入、跨站脚本（XSS）、跨站请求伪造（CSRF）等\n5.用户认证和权限管理\n6.日志记录和审计\n7.前端开发\n8.安全性",
+  "salaryDesc": "30-35元/时",
+  "securityId": "nK2WGbUIbDSy_-c1cX887PCoi86A_cYFPTf6PD06dwO3J-IrECoZgerHGcKoYIldqGVVwN8~",
+  "sessionId": ""
+}

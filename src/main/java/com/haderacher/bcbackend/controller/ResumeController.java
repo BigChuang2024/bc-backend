@@ -1,31 +1,34 @@
 package com.haderacher.bcbackend.controller;
 
+import com.haderacher.bcbackend.service.MinioService;
 import com.haderacher.bcbackend.service.ResumeService;
 import io.minio.MinioClient;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping("/resumes")
 @Slf4j
+@AllArgsConstructor
 public class ResumeController {
 
-    @Autowired
-    MinioClient minioClient;
+    private MinioService minioService;
 
-    @Autowired
-    ResumeService resumeService;
+    private ResumeService resumeService;
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadResume(
@@ -54,7 +57,7 @@ public class ResumeController {
         try {
             // 3. 调用Service层处理业务逻辑
             log.info("Received resume upload request for user ID: {}", userId);
-            String fileKey = resumeService.processAndStoreResume(file, userId);
+            String fileKey = resumeService.processAndStoreResume(file, userId, "resumes");
 
             // 4. 返回成功的响应
             log.info("Successfully processed resume for user ID: {}. File key: {}", userId, fileKey);
@@ -72,6 +75,36 @@ public class ResumeController {
                     Collections.singletonMap("error", "服务器内部错误，上传失败：" + e.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR
             );
+        }
+    }
+
+    /* 下载简历 */
+    @GetMapping("/{fileKey}")
+    public ResponseEntity<byte[]> downloadResume(@PathVariable("fileKey") String fileKey) {
+        try {
+            byte[] fileBytes = minioService.getFileBytesFromMinio(fileKey, "resumes");
+
+            // 设置响应头，告诉浏览器这是一个需要下载的文件
+            HttpHeaders headers = new HttpHeaders();
+            // application/octet-stream 是通用的二进制文件类型
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            // 1. 对包含中文的文件名进行 URL 编码，指定编码为 UTF-8
+            String encodedFileName = URLEncoder.encode(fileKey, StandardCharsets.UTF_8);
+
+            // 2. 手动构建符合 RFC 6266 标准的 Content-Disposition Header
+            // 格式为: attachment; filename*="<charset>'<lang>'<encoded-value>"
+            // 注意：filename* 后面的 UTF-8'' 是标准格式，两个单引号不能省略
+            String contentDisposition = "attachment; filename*=UTF-8''" + encodedFileName;
+
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, contentDisposition);
+
+            return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
+
+        } catch (Exception e) {
+            // 同样，进行错误处理
+            // log.error("Error downloading file '{}' from bucket '{}': {}", fileKey, bucket, e.getMessage());
+            // 注意这里返回的 body 类型需要匹配 ResponseEntity<byte[]>，所以返回 null 或者一个空的 byte 数组
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

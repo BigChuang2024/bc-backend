@@ -18,11 +18,7 @@ public class ResumeService {
     MinioService minioService;
 
 
-    public String processAndStoreResume(MultipartFile file, String userId) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        return minioService.uploadFileToMinio(file, userId);
-    }
-
-    public String getResumeFile(String userId) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        return minioService.getFileFromMinio(userId);
+    public String processAndStoreResume(MultipartFile file, String userId, String bucket) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        return minioService.uploadFileToMinio(file, userId, bucket);
     }
 }

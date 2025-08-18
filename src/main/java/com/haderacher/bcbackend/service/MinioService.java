@@ -23,16 +23,17 @@ public class MinioService {
     @Autowired
     MinioClient minioClient;
 
-    public String uploadFileToMinio(MultipartFile file, String bucket) throws IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public String uploadFileToMinio(MultipartFile file,String userId, String bucket) throws IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
 
         String originalFilename = file.getOriginalFilename();
         // 使用 UUID 生成唯一的文件名，防止重名覆盖
-        String fileKey = "resumes/" + UUID.randomUUID() + "-" + originalFilename;
+        String fileKey = UUID.randomUUID() + "-" + originalFilename;
 
         // 设置对象的元数据 (可选)
         Map<String, String> metadata = new HashMap<>();
         metadata.put("Content-Type", file.getContentType());
         metadata.put("Content-Length", String.valueOf(file.getSize()));
+        metadata.put("userId", userId);
 
         minioClient.putObject(
                 PutObjectArgs.builder()
@@ -47,14 +48,13 @@ public class MinioService {
         return fileKey;
     }
 
-    public String getFileFromMinio(String fileKey) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public byte[] getFileBytesFromMinio(String fileKey, String bucket) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
         try (InputStream stream = minioClient.getObject(GetObjectArgs
                 .builder()
-                .bucket("user2")
+                .bucket(bucket)
                 .object(fileKey)
                 .build())) {
-            byte[] bytes = stream.readAllBytes();
-            return Base64.getEncoder().encodeToString(bytes);
+            return stream.readAllBytes();
         }
     }
 }
