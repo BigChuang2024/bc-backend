@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -40,6 +42,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 .ifPresent(token -> {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 studentRepository.findByUsername(token).ifPresent(student -> {
+                    student.setPassword(null);
+                    log.debug("logging student:{}", student);
                     UsernamePasswordAuthenticationToken authenticationToken
                             = new UsernamePasswordAuthenticationToken(student, null,
                             student.getAuthorities().stream().map(

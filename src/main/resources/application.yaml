@@ -26,11 +26,6 @@ spring:
       embedding:
         options:
           model: nomic-embed-text
-    vectorstore:
-      redis:
-        initialize-schema: true
-        index-name: custom-index
-        prefix: custom-prefix
     deepseek:
       api-key: sk-191e323122684eb6b93d50b853ea49ed
       chat:

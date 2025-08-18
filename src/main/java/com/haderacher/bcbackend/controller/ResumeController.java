@@ -1,5 +1,6 @@
 package com.haderacher.bcbackend.controller;
 
+import com.haderacher.bcbackend.entity.aggregates.student.Student;
 import com.haderacher.bcbackend.service.MinioService;
 import com.haderacher.bcbackend.service.ResumeService;
 import io.minio.MinioClient;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,9 +34,10 @@ public class ResumeController {
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadResume(
-            @RequestParam("resume") MultipartFile file,
-            @RequestParam("userId") String userId) {
+            @RequestParam("resume") MultipartFile file) {
+        var student = (Student)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        int userId = Math.toIntExact(student.getId());
         // 1. 基本的文件校验
         if (file.isEmpty()) {
             log.warn("Upload attempt with an empty file for user ID: {}", userId);
@@ -57,7 +60,7 @@ public class ResumeController {
         try {
             // 3. 调用Service层处理业务逻辑
             log.info("Received resume upload request for user ID: {}", userId);
-            String fileKey = resumeService.processAndStoreResume(file, userId, "resumes");
+            String fileKey = resumeService.processAndStoreResume(file, String.valueOf(userId), "resumes");
 
             // 4. 返回成功的响应
             log.info("Successfully processed resume for user ID: {}. File key: {}", userId, fileKey);
