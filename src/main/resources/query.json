@@ -1,0 +1,10 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "今天热点新闻"
+    }
+  ],
+  "search_source": "baidu_search_v2",
+  "search_recency_filter": "week"
+}

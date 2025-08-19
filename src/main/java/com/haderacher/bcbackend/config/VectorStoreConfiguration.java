@@ -17,7 +17,7 @@ public class VectorStoreConfiguration {
     @Qualifier("jobVectorStore")
     public VectorStore jobVectorStore(JedisPooled jedisPooled, EmbeddingModel embeddingMode) {
         return RedisVectorStore.builder(jedisPooled, embeddingMode)
-                .indexName("jobs")
+                .indexName("custom-index")
                 .prefix("job:")
                 .build();
     }
@@ -26,7 +26,7 @@ public class VectorStoreConfiguration {
     @Qualifier("resumeVectorStore")
     public VectorStore resumeVectorStore(JedisPooled jedisPooled, EmbeddingModel embeddingMode) {
         return RedisVectorStore.builder(jedisPooled, embeddingMode)
-                .indexName("resumes")
+                .indexName("custom-index")
                 .prefix("resume:")
                 .build();
     }
