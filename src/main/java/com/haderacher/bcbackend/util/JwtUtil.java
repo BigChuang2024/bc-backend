@@ -18,6 +18,7 @@ import java.util.Optional;
 @Component
 @Slf4j
 public class JwtUtil {
+
     private final String jwtSecret;
 
     private final int sessionTime;

@@ -1,1 +1,1 @@
-mongoimport --db="bigchuang" --collection="job_info" --file="./data.json" --uri="mongodb://localhost:27017/" --password="example" --username="root" --authenticationDatabase="admin"
+mongoimport --db="bigchuang" --collection="job_info" --file="./data.json" --uri="mongodb://localhost:27017/" --password="example" --username="root" --authenticationDatabase="admin" --jsonArray

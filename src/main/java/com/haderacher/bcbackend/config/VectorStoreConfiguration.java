@@ -17,6 +17,7 @@ public class VectorStoreConfiguration {
     @Qualifier("jobVectorStore")
     public VectorStore jobVectorStore(JedisPooled jedisPooled, EmbeddingModel embeddingMode) {
         return RedisVectorStore.builder(jedisPooled, embeddingMode)
+                .initializeSchema(true)
                 .indexName("custom-index")
                 .prefix("job:")
                 .build();

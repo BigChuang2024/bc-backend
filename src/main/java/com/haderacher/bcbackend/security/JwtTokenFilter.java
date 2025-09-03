@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,15 +24,13 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
+@AllArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    @Autowired
     private StudentRepository studentRepository;
 
-    @Autowired
     private RecruiterRepository recruiterRepository;
 
-    @Autowired
     private JwtUtil jwtUtil;
 
     @Override
@@ -55,6 +54,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
         });
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return "/students/login".equals(path);
     }
 
     private Optional<String> getTokenString(String header) {

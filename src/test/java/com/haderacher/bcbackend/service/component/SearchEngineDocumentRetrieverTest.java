@@ -1,4 +1,4 @@
-package com.haderacher.bcbackend.service.retriever;
+package com.haderacher.bcbackend.service.component;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.document.Document;

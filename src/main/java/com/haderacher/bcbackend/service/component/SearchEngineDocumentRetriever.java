@@ -1,10 +1,8 @@
-package com.haderacher.bcbackend.service.retriever;
+package com.haderacher.bcbackend.service.component;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.bridge.Message;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.rag.Query;
