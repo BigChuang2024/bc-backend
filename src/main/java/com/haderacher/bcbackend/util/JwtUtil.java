@@ -32,6 +32,11 @@ public class JwtUtil {
         this.secretKey = new SecretKeySpec(jwtSecret.getBytes(), 0, jwtSecret.getBytes().length, "HmacSHA256");
     }
 
+    /**
+     * 将<code>Student</code>类转化为<code>JWT Token</code>，这个token包含签发者issuer，用户名subject和过期时间戳expiration三个信息，作为payload
+     * @param student 需要被转化的学生
+     * @return <code>token</code> JWT Token
+     */
     public String toToken(Student student) {
         return Jwts.builder()
                 .issuer("BCBackend")
