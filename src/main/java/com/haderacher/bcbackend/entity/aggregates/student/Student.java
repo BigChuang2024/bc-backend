@@ -6,6 +6,7 @@ import com.haderacher.bcbackend.entity.valueobject.Education;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+import org.springframework.security.core.CredentialsContainer;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -17,7 +18,7 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Student {
+public class Student implements CredentialsContainer {
 
     @Id // 标记为主键
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 主键自增长策略
@@ -102,6 +103,11 @@ public class Student {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    @Override
+    public void eraseCredentials() {
+        this.password = null;
     }
 }
 

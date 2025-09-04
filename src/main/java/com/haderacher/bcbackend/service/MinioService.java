@@ -1,13 +1,13 @@
 package com.haderacher.bcbackend.service;
 
-import io.minio.GetObjectArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import io.minio.*;
 import io.minio.errors.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
@@ -23,16 +23,17 @@ public class MinioService {
     @Autowired
     MinioClient minioClient;
 
-    public String uploadFileToMinio(MultipartFile file,String userId, String bucket) throws IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public String uploadFileToMinio(MultipartFile file, String userId, String bucket) throws IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
 
         String originalFilename = file.getOriginalFilename();
         // 使用 UUID 生成唯一的文件名，防止重名覆盖
-        String fileKey = UUID.randomUUID() + "-" + originalFilename;
+        String fileKey = UUID.randomUUID().toString();
 
         // 设置对象的元数据 (可选)
         Map<String, String> metadata = new HashMap<>();
         metadata.put("Content-Type", file.getContentType());
         metadata.put("Content-Length", String.valueOf(file.getSize()));
+        metadata.put("original-filename", originalFilename);
         metadata.put("userId", userId);
 
         minioClient.putObject(
@@ -46,6 +47,23 @@ public class MinioService {
         );
 
         return fileKey;
+    }
+
+    public @Nullable String getFileName(String fileKey, String bucket) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        StatObjectResponse stat = minioClient.statObject(
+                StatObjectArgs.builder().
+                        bucket(bucket)
+                        .object(fileKey)
+                        .build());
+        Map<String, String> metadataMap = stat.userMetadata();
+
+        if (metadataMap != null && metadataMap.containsKey("original-filename")) {
+            String filename = metadataMap.get("original-filename");
+            if (filename != null && !filename.isEmpty()) {
+                return filename;
+            }
+        }
+        return null;
     }
 
     public byte[] getFileBytesFromMinio(String fileKey, String bucket) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
