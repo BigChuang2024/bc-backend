@@ -44,7 +44,7 @@ management:
       exposure:
         include: "*"
 
-minio:
-  endpoint: "http://127.0.0.1:9000"
-  accessKey: "minioadmin"
-  secretKey: "minioadmin"
+alioss:
+  OSS_ACCESS_KEY_ID: LTAI5tPyNok7LrUEgxvL1we6
+  OSS_ACCESS_KEY_SECRET: AvQBsAR6uK5WZea9blPVi61tEu9Cbj
+  bucket: bc-resume

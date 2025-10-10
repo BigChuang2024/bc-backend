@@ -11,7 +11,7 @@ services:
   mongo:
     image: mongo
     ports:
-      - 27017:27017
+      - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
@@ -19,7 +19,7 @@ services:
   mongo-express:
     image: mongo-express
     ports:
-      - 8081:8081
+      - "8081:8081"
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
@@ -28,15 +28,5 @@ services:
   redis:
     image: redis/redis-stack:latest
     ports:
-      - 6379:6379
-      - 8002:8002
-  minio:
-    image: minio/minio:latest
-    container_name: my-minio-server
-    ports:
-      - "9000:9000"  # API 端口
-      - "9001:9001"  # 控制台 Web UI 端口
-    environment:
-      MINIO_ROOT_USER: minioadmin      # 设置你自己的访问密钥
-      MINIO_ROOT_PASSWORD: minioadmin  # 设置你自己的秘密密钥
-    command: server /data --console-address ":9001"
+      - "6379:6379"
+      - "8002:8002"

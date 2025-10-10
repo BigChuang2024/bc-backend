@@ -1,10 +1,9 @@
 package com.haderacher.bcbackend.entity.aggregates.resume;
 
-import com.haderacher.bcbackend.entity.valueobject.Experience;
-import com.haderacher.bcbackend.entity.valueobject.ProjectExp;
 import com.haderacher.bcbackend.entity.valueobject.Education;
 import com.haderacher.bcbackend.entity.aggregates.student.Student;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
@@ -19,6 +18,7 @@ import java.util.Objects;
 @Setter
 @Entity
 @Table(name = "resumes") // 映射到数据库表名为 'resumes'
+@AllArgsConstructor
 public class Resume {
 
     @Id
@@ -29,11 +29,11 @@ public class Resume {
     @JoinColumn(name = "student_id", nullable = false) // 外键列名
     private Student student; // 关联的学生实体
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String title; // 简历标题 (例如："我的软件工程师简历", "实习简历")
 
-    @Column(length = 255)
-    private String fileUrl; // 如果简历是上传的文件，这里存储文件的URL
+    @Column
+    private String fileKey; // 对象存储中的fileKey
 
     @Column(columnDefinition = "TEXT") // 自我介绍或概述
     private String summary;
