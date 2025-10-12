@@ -8,5 +8,3 @@
 6. 接mcp （有余力）
 7. 大模型画学习路径图
 8. Grafana监控（或者其他                     ）
-
-![img.png](img.png)
