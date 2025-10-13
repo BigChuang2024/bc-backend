@@ -12,7 +12,14 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OSSConfiguration {
+
+    /**
+     * 创建 OSS 客户端 Bean。
+     * 通过设置 destroyMethod = ""，可以防止 Spring 在上下文关闭时自动调用 ossClient.shutdown() 方法。
+     * 这在测试环境中尤其重要，可以避免因测试上下文频繁销毁和重建导致的“连接池已关闭”问题。
+     */
     @Bean
+    // <--- 添加这一行
     OSS aliOssClient(@Value("${alioss.OSS_ACCESS_KEY_ID}") String accessKeyID,
                      @Value("${alioss.OSS_ACCESS_KEY_SECRET}") String accessKeySecret) {
 
@@ -21,7 +28,6 @@ public class OSSConfiguration {
         clientBuilderConfiguration.setSignatureVersion(SignVersion.V4);
         // 设置使用 HTTPS 协议访问 OSS，保证传输安全性
         clientBuilderConfiguration.setProtocol(Protocol.HTTPS);
-
 
 
         return OSSClientBuilder.create()
