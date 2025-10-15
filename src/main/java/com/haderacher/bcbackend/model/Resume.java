@@ -21,10 +21,6 @@ public class Resume {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY) // 多份简历属于一个学生
-    @JoinColumn(name = "student_id", nullable = false) // 外键列名
-    private Student student; // 关联的学生实体
-
     @Column(nullable = false)
     private String title; // 简历标题 (例如："我的软件工程师简历", "实习简历")
 
@@ -42,9 +38,8 @@ public class Resume {
     // --- 构造函数 ---
     public Resume() {}
 
-    public Resume(String title, Student student) {
+    public Resume(String title) {
         this.title = title;
-        this.student = student;
     }
 
     // --- 生命周期回调 ---

@@ -15,7 +15,7 @@ spring:
     password: secret
   jpa:
     hibernate:
-      ddl-auto: create-drop # 在应用启动时自动创建数据库表，关闭时自动删除表。
+      ddl-auto: create # 在应用启动时自动创建数据库表，并删除原来的数据
     database: mysql
   ai:
     model:

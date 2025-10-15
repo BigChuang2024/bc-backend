@@ -7,6 +7,8 @@ import com.haderacher.bcbackend.model.User;
 import com.haderacher.bcbackend.repository.RoleRepository;
 import com.haderacher.bcbackend.repository.StudentProfileRepository;
 import com.haderacher.bcbackend.repository.UserRepository;
+import com.haderacher.bcbackend.util.JwtUtil;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,15 +25,18 @@ public class UserService implements UserDetailsService {
     private final RoleRepository roleRepository;
     private final StudentProfileRepository studentProfileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public UserService(UserRepository userRepository,
                        RoleRepository roleRepository,
                        StudentProfileRepository studentProfileRepository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.studentProfileRepository = studentProfileRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     /**
@@ -45,28 +50,24 @@ public class UserService implements UserDetailsService {
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new RuntimeException("Error: Username is already taken!");
         }
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("Error: Email is already in use!");
+        if (userRepository.existsByPhone(dto.getPhone())) {
+            throw new RuntimeException("Error: Phone is already in use!");
         }
 
         // 2. 查找 "ROLE_STUDENT" 角色
-        // 假设该角色已在数据库中初始化
+        // 该角色已在数据库中初始化
         Role studentRole = roleRepository.findByName("ROLE_STUDENT")
                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 
         // 3. 创建 User 实体
         User user = new User();
         user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
         user.setPassword(passwordEncoder.encode(dto.getPassword())); // 4. 加密密码
         user.setRoles(Collections.singleton(studentRole)); // 5. 赋予角色
         user.setEnabled(true);
 
         // 6. 创建 StudentProfile 实体
         StudentProfile profile = new StudentProfile();
-        profile.setRealName(dto.getRealName());
-        profile.setSchool(dto.getSchool());
-        profile.setMajor(dto.getMajor());
 
         // 7. 关联 User 和 StudentProfile
         // 因为 StudentProfile 的 ID 依赖于 User，所以先保存 User
@@ -80,9 +81,20 @@ public class UserService implements UserDetailsService {
         return savedUser;
     }
 
+    @Transactional
+    public String registerUserAndGetToken(StudentRegistrationDto dto) {
+        User user = registerStudent(dto);
+        // 生成 JWT token 的逻辑
+        return jwtUtil.toToken(user);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+    }
+
+    public static User getCurrentUser() {
+        return (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

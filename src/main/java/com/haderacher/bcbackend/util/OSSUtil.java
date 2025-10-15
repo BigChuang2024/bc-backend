@@ -4,7 +4,7 @@ import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.OSSObject;
-import com.haderacher.bcbackend.service.StudentService;
+import com.haderacher.bcbackend.service.UserService;
 import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,10 +20,12 @@ public class OSSUtil {
     private final OSS ossClient;
 
     private final String bucketName;
+    private final UserService userService;
 
-    OSSUtil(OSS ossClient, @Value("${alioss.bucket}") String bucketName) {
+    OSSUtil(OSS ossClient, @Value("${alioss.bucket}") String bucketName, UserService userService) {
         this.ossClient = ossClient;
         this.bucketName = bucketName;
+        this.userService = userService;
     }
 
     /**
@@ -34,8 +36,8 @@ public class OSSUtil {
      * @return 返回文件的 阿里云url 路径
      */
     public String upload(byte[] bytes, String originalFileName) {
-
-        String currentUsername = StudentService.getCurrentUsername();
+        var user = UserService.getCurrentUser();
+        String currentUsername = user.getUsername();
         String objectName = currentUsername + originalFileName;
         try {
             // 创建PutObject请求。
@@ -76,7 +78,7 @@ public class OSSUtil {
          */
         public boolean deleteObject(String objectName) {
             // 拼接当前用户名作为前缀，定位到完整的文件路径
-            String currentUsername = StudentService.getCurrentUsername();
+            String currentUsername = UserService.getCurrentUser().getUsername();
             String fullObjectName = currentUsername + objectName;
 
             try {
@@ -100,7 +102,7 @@ public class OSSUtil {
      * @return 如果文件存在则返回 true, 否则返回 false
      */
     public boolean doesObjectExist(String objectName) {
-        var currentUsername = StudentService.getCurrentUsername();
+        var currentUsername = userService.getCurrentUser().getUsername();
         objectName = currentUsername + objectName;
         try {
             // 调用SDK的doesObjectExist方法判断文件是否存在。
@@ -126,7 +128,7 @@ public class OSSUtil {
      */
     public @Nullable byte[] download(String objectName) {
         // 拼接当前用户名作为前缀，定位到完整的文件路径
-        String currentUsername = StudentService.getCurrentUsername();
+        String currentUsername = UserService.getCurrentUser().getUsername();
         String fullObjectName = currentUsername + objectName;
 
         try {

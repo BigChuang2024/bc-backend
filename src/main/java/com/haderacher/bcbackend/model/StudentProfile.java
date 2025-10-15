@@ -27,9 +27,6 @@ public class StudentProfile {
     @Column(length = 100)
     private String school;
 
-    @Column(length = 50)
-    private String phoneNumber;
-
     @Column(length = 100) // 所在大学
     private String university;
 

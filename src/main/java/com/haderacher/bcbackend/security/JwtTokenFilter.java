@@ -1,7 +1,6 @@
 package com.haderacher.bcbackend.security;
 
-import com.haderacher.bcbackend.repository.RecruiterRepository;
-import com.haderacher.bcbackend.repository.StudentRepository;
+import com.haderacher.bcbackend.repository.UserRepository;
 import com.haderacher.bcbackend.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,9 +24,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private StudentRepository studentRepository;
-
-    private RecruiterRepository recruiterRepository;
+    private UserRepository userRepository;
 
     private JwtUtil jwtUtil;
 
@@ -38,12 +35,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 .flatMap(token -> jwtUtil.getStubFromToken(token))
                 .ifPresent(token -> {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                studentRepository.findByUsername(token).ifPresent(student -> {
-                    student.setPassword(null);
-                    log.debug("logging student:{}", student);
+                userRepository.findByUsername(token).ifPresent(user -> {
+                    log.debug("logging user:{}", user);
                     UsernamePasswordAuthenticationToken authenticationToken
-                            = new UsernamePasswordAuthenticationToken(student, null,
-                            student.getAuthorities().stream().map(
+                            = new UsernamePasswordAuthenticationToken(user, null,
+                            user.getAuthorities().stream().map(
                                     authority ->
                                             new SimpleGrantedAuthority(authority.toString())).collect(Collectors.toList())
                     );
