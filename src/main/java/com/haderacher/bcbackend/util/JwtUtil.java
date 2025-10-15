@@ -1,7 +1,6 @@
 package com.haderacher.bcbackend.util;
 
-import com.haderacher.bcbackend.model.Recruiter;
-import com.haderacher.bcbackend.model.Student;
+import com.haderacher.bcbackend.model.User;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
@@ -33,23 +32,15 @@ public class JwtUtil {
     }
 
     /**
-     * 将<code>Student</code>类转化为<code>JWT Token</code>，这个token包含签发者issuer，用户名subject和过期时间戳expiration三个信息，作为payload
-     * @param student 需要被转化的学生
+     * 将<code>Student</code>类转化为<code>JWT Token</code>，这个token包含签发者issuer，用户名subject、用户角色role和过期时间戳expiration四个信息，作为payload
+     * @param user 需要被转化的用户
      * @return <code>token</code> JWT Token
      */
-    public String toToken(Student student) {
+    public String toToken(User user) {
         return Jwts.builder()
                 .issuer("BCBackend")
-                .subject(student.getUsername())
-                .signWith(secretKey)
-                .expiration(expireTimeFromNow())
-                .compact();
-    }
-
-    public String toToken(Recruiter recruiter) {
-        return Jwts.builder()
-                .issuer("BCBackend")
-                .subject(recruiter.getUsername())
+                .subject(user.getUsername())
+                .claim("roles", user.getRoles())
                 .signWith(secretKey)
                 .expiration(expireTimeFromNow())
                 .compact();

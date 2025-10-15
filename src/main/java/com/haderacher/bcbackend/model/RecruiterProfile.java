@@ -23,9 +23,6 @@ public class RecruiterProfile {
     @Column(length = 50)
     private String realName;
 
-    @Column(length = 50)
-    private String phoneNumber;
-
     @Column(length = 255)
     private String selfIntroduction;
 

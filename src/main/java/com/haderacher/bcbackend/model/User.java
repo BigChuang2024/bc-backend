@@ -1,7 +1,5 @@
 package com.haderacher.bcbackend.model;
 
-
-import com.haderacher.bcbackend.model.valueobject.Authority;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +8,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,8 +29,10 @@ public class User implements UserDetails { // 2. 实现 UserDetails 接口
     @Column(nullable = false)
     private String password;
 
-    @Column(unique = true, nullable = false, length = 100)
+    @Column(unique = true, nullable = true, length = 100)
     private String email;
+
+    private String phone;
 
     @Column(name = "is_enabled", nullable = false) // 明确列名，避免与方法名冲突
     private boolean enabled = true;

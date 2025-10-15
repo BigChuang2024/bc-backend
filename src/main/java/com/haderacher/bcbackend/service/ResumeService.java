@@ -1,10 +1,10 @@
 package com.haderacher.bcbackend.service;
 
-import com.haderacher.bcbackend.model.Resume;
-import com.haderacher.bcbackend.repository.ResumeRepository;
-import com.haderacher.bcbackend.model.Student;
 import com.haderacher.bcbackend.exception.BadFormatException;
 import com.haderacher.bcbackend.exception.EmptyFileException;
+import com.haderacher.bcbackend.model.Resume;
+import com.haderacher.bcbackend.model.User;
+import com.haderacher.bcbackend.repository.ResumeRepository;
 import com.haderacher.bcbackend.service.reader.MyPagePdfDocumentReader;
 import com.haderacher.bcbackend.util.OSSUtil;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,6 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,8 +50,8 @@ public class ResumeService {
 
             // 3. 文档分片
             List<Document> split = tokenTextSplitter.apply(docsFromPdf);
-            Student student = (Student) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String userId = student.getId().toString();
+            User currentUser = UserService.getCurrentUser();
+            String userId = currentUser.getId().toString();
             log.debug("adding resume for user:{}", userId);
             split.forEach(document -> document.getMetadata().put("user", userId));
 
@@ -64,7 +63,6 @@ public class ResumeService {
             // 注意：这里假设您有一个 StudentService 来获取当前登录的学生
             // Student currentStudent = studentService.getCurrentStudent();
             Resume resume = new Resume();
-            resume.setStudent(student);
             resume.setTitle(file.getOriginalFilename());
             // resume.setStudent(currentStudent); // 关联当前学生
             resumeRepository.save(resume);
