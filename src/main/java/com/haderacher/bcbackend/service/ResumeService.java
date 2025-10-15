@@ -1,8 +1,8 @@
 package com.haderacher.bcbackend.service;
 
-import com.haderacher.bcbackend.entity.aggregates.resume.Resume;
-import com.haderacher.bcbackend.entity.aggregates.resume.ResumeRepository;
-import com.haderacher.bcbackend.entity.aggregates.student.Student;
+import com.haderacher.bcbackend.model.Resume;
+import com.haderacher.bcbackend.repository.ResumeRepository;
+import com.haderacher.bcbackend.model.Student;
 import com.haderacher.bcbackend.exception.BadFormatException;
 import com.haderacher.bcbackend.exception.EmptyFileException;
 import com.haderacher.bcbackend.service.reader.MyPagePdfDocumentReader;
@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

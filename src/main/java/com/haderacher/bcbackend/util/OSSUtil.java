@@ -2,18 +2,12 @@ package com.haderacher.bcbackend.util;
 
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.OSSObject;
-import com.haderacher.bcbackend.entity.aggregates.student.Student;
 import com.haderacher.bcbackend.service.StudentService;
 import jakarta.annotation.Nullable;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;

@@ -1,19 +1,15 @@
 package com.haderacher.bcbackend.controller;
 
-import com.haderacher.bcbackend.entity.aggregates.student.Student;
 import com.haderacher.bcbackend.util.OSSUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.webresources.FileResource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 

@@ -1,7 +1,7 @@
 package com.haderacher.bcbackend.security;
 
-import com.haderacher.bcbackend.entity.aggregates.recruiter.RecruiterRepository;
-import com.haderacher.bcbackend.entity.aggregates.student.StudentRepository;
+import com.haderacher.bcbackend.repository.RecruiterRepository;
+import com.haderacher.bcbackend.repository.StudentRepository;
 import com.haderacher.bcbackend.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,13 +10,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;

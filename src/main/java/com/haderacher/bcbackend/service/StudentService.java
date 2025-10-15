@@ -2,16 +2,12 @@ package com.haderacher.bcbackend.service;
 
 import com.haderacher.bcbackend.dto.LoginStudentRequest;
 import com.haderacher.bcbackend.dto.RegisterStudentRequest;
-import com.haderacher.bcbackend.entity.aggregates.recruiter.Recruiter;
-import com.haderacher.bcbackend.entity.aggregates.recruiter.RecruiterRepository;
-import com.haderacher.bcbackend.entity.aggregates.student.Student;
-import com.haderacher.bcbackend.entity.aggregates.student.StudentRepository;
+import com.haderacher.bcbackend.repository.RecruiterRepository;
+import com.haderacher.bcbackend.model.Student;
+import com.haderacher.bcbackend.repository.StudentRepository;
 import com.haderacher.bcbackend.exception.UserExistException;
 import com.haderacher.bcbackend.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.password.CompromisedPasswordException;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -24,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-
+@Deprecated
 @Component
 public class StudentService implements UserDetailsService {
 

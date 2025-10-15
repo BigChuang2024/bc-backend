@@ -1,7 +1,7 @@
 package com.haderacher.bcbackend.util;
 
-import com.haderacher.bcbackend.entity.aggregates.recruiter.Recruiter;
-import com.haderacher.bcbackend.entity.aggregates.student.Student;
+import com.haderacher.bcbackend.model.Recruiter;
+import com.haderacher.bcbackend.model.Student;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;

@@ -1,8 +1,8 @@
 package com.haderacher.bcbackend.service;
 
 
-import com.haderacher.bcbackend.entity.aggregates.jobDetails.JobDetails;
-import com.haderacher.bcbackend.entity.aggregates.jobDetails.JobDetailsRepository;
+import com.haderacher.bcbackend.model.JobDetails;
+import com.haderacher.bcbackend.repository.JobDetailsRepository;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.TokenCountBatchingStrategy;
 import org.springframework.ai.vectorstore.VectorStore;
