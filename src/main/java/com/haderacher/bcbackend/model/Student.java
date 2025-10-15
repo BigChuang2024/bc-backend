@@ -1,16 +1,17 @@
-package com.haderacher.bcbackend.entity.aggregates.student;
+package com.haderacher.bcbackend.model;
 
-import com.haderacher.bcbackend.entity.aggregates.resume.Resume;
-import com.haderacher.bcbackend.entity.valueobject.Authority;
-import com.haderacher.bcbackend.entity.valueobject.Education;
+import com.haderacher.bcbackend.model.valueobject.Authority;
+import com.haderacher.bcbackend.model.valueobject.Education;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.CredentialsContainer;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Deprecated
 @Builder
 @Entity // 标记这是一个 JPA 实体
 @Table(name = "students") // 映射到数据库表名为 'students'
@@ -18,7 +19,7 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Student implements CredentialsContainer {
+public class Student implements CredentialsContainer, UserDetails {
 
     @Id // 标记为主键
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 主键自增长策略

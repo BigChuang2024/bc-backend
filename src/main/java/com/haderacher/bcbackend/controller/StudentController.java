@@ -1,7 +1,7 @@
 package com.haderacher.bcbackend.controller;
 
 import com.haderacher.bcbackend.dto.LoginStudentRequest;
-import com.haderacher.bcbackend.entity.aggregates.student.Student;
+import com.haderacher.bcbackend.model.Student;
 import com.haderacher.bcbackend.service.StudentService;
 import com.haderacher.bcbackend.dto.RegisterStudentRequest;
 import org.springframework.http.ResponseEntity;

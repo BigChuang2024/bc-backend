@@ -1,7 +1,5 @@
-package com.haderacher.bcbackend.entity.aggregates.resume;
+package com.haderacher.bcbackend.model;
 
-import com.haderacher.bcbackend.entity.valueobject.Education;
-import com.haderacher.bcbackend.entity.aggregates.student.Student;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +7,6 @@ import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList; // 使用 ArrayList 更灵活，因为列表是有序的
-import java.util.List;
 import java.util.Objects;
 
 
@@ -37,13 +33,6 @@ public class Resume {
 
     @Column(columnDefinition = "TEXT") // 自我介绍或概述
     private String summary;
-
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(
-            name = "resume_educations",
-            joinColumns = @JoinColumn(name = "resume_id")
-    )
-    private List<Education> educationHistory = new ArrayList<>();
 
     @Column(updatable = false)
     private LocalDateTime createdAt;

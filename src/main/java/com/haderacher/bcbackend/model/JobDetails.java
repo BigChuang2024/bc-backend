@@ -1,4 +1,4 @@
-package com.haderacher.bcbackend.entity.aggregates.jobDetails;
+package com.haderacher.bcbackend.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
