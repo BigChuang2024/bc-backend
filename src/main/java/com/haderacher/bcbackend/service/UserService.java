@@ -93,11 +93,21 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public String loginUserAndGetToken(StudentLoginDto dto) {
+        // 1. 根据用户名从数据库查找用户实体
         Optional<User> optionalUser = userRepository.findByUsername(dto.getUsername());
-        if (optionalUser.isEmpty() || !optionalUser.get().getPassword().equals(dto.getPassword())) {
+
+        // 2. 获取用户输入的原始密码
+        String rawPassword = dto.getPassword();
+
+        // 3. 检查用户是否存在，并使用 passwordEncoder.matches() 验证密码
+        if (optionalUser.isEmpty() || !passwordEncoder.matches(rawPassword, optionalUser.get().getPassword())) {
+            // 如果用户不存在或密码不匹配，抛出认证异常
             throw new BadCredentialsException("Invalid username or password!");
         }
-        return jwtUtil.toToken(optionalUser.get());
+
+        // 4. 认证成功，为用户生成 JWT
+        User user = optionalUser.get();
+        return jwtUtil.toToken(user);
     }
 
     @Override
