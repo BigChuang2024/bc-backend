@@ -48,7 +48,8 @@ public class SecurityConfig {
                 List.of("http://10.150.*.*:[*]",
                         "https://10.150.*.*:[*]",
                         "http://localhost:[*]",
-                        "http://127.0.0.1:[*]"
+                        "http://127.0.0.1:[*]",
+                        "http://221.236.27.78:[*]"
                 ));
 
         // 允许所有请求方法 (GET, POST, PUT, DELETE 等)
