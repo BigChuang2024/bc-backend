@@ -21,11 +21,19 @@ public class Resume {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String title; // 简历标题 (例如："我的软件工程师简历", "实习简历")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false) // 外键列
+    private User user; // 多对一关联到 User
 
     @Column
-    private String fileKey; // 对象存储中的fileKey
+    private String fileName; // 对象存储中的fileKey
+
+    private String fileType; // 文件类型，例如 "pdf", "docx"
+
+    private String mongoId; // MongoDB中的文件ID
+
+    @Enumerated(EnumType.STRING)
+    private ParseStatus status; // 枚举类型，表示简历状态
 
     @Column(columnDefinition = "TEXT") // 自我介绍或概述
     private String summary;
@@ -37,10 +45,6 @@ public class Resume {
 
     // --- 构造函数 ---
     public Resume() {}
-
-    public Resume(String title) {
-        this.title = title;
-    }
 
     // --- 生命周期回调 ---
     @PrePersist

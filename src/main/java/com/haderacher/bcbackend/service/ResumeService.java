@@ -3,7 +3,6 @@ package com.haderacher.bcbackend.service;
 import com.haderacher.bcbackend.exception.BadFormatException;
 import com.haderacher.bcbackend.exception.EmptyFileException;
 import com.haderacher.bcbackend.model.Resume;
-import com.haderacher.bcbackend.model.User;
 import com.haderacher.bcbackend.repository.ResumeRepository;
 import com.haderacher.bcbackend.service.reader.MyPagePdfDocumentReader;
 import com.haderacher.bcbackend.util.OSSUtil;
@@ -13,6 +12,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,7 +35,7 @@ public class ResumeService {
 
     private final ResumeRepository resumeRepository;
 
-    // 这个函数只会给学生使用
+    @PreAuthorize("hasRole('STUDENT')")
     public String processAndStoreResume(MultipartFile file) {
         try {
             // 1. 检查文件是否合法
@@ -64,7 +64,6 @@ public class ResumeService {
             // 注意：这里假设您有一个 StudentService 来获取当前登录的学生
             // Student currentStudent = studentService.getCurrentStudent();
             Resume resume = new Resume();
-            resume.setTitle(file.getOriginalFilename());
             // resume.setStudent(currentStudent); // 关联当前学生
             resumeRepository.save(resume);
             log.info("简历元数据已保存至数据库，URL: {}", fileUrl);
