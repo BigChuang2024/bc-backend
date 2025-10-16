@@ -5,7 +5,6 @@ import com.haderacher.bcbackend.dto.StudentLoginDto;
 import com.haderacher.bcbackend.dto.StudentRegistrationDto;
 import com.haderacher.bcbackend.service.UserService;
 import com.haderacher.bcbackend.util.JwtUtil;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,8 +28,8 @@ public class UserController {
         return ApiResponse.success("token: " + token);
     }
 
-    @GetMapping("/students/login")
-    public ApiResponse<String> studentLogin(StudentLoginDto studentLoginDto) {
+    @PostMapping("/students/login")
+    public ApiResponse<String> studentLogin(@RequestBody StudentLoginDto studentLoginDto) {
         String token = userService.loginUserAndGetToken(studentLoginDto);
         return  ApiResponse.success("token: " + token);
     }

@@ -1,11 +1,11 @@
 package com.haderacher.bcbackend.util;
 
-import com.haderacher.bcbackend.model.User;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -36,11 +36,11 @@ public class JwtUtil {
      * @param user 需要被转化的用户
      * @return <code>token</code> JWT Token
      */
-    public String toToken(User user) {
+    public String toToken(UserDetails user) {
         return Jwts.builder()
                 .issuer("BCBackend")
                 .subject(user.getUsername())
-                .claim("roles", user.getRoles())
+                .claim("roles", user.getAuthorities())
                 .signWith(secretKey)
                 .expiration(expireTimeFromNow())
                 .compact();
