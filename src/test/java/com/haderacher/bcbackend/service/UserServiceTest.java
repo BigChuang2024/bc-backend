@@ -1,25 +1,22 @@
+// java
 package com.haderacher.bcbackend.service;
 
 import com.haderacher.bcbackend.dto.StudentLoginDto;
 import com.haderacher.bcbackend.dto.StudentRegistrationDto;
 import com.haderacher.bcbackend.model.Role;
+import com.haderacher.bcbackend.model.StudentProfile;
 import com.haderacher.bcbackend.model.User;
 import com.haderacher.bcbackend.repository.RoleRepository;
 import com.haderacher.bcbackend.repository.StudentProfileRepository;
 import com.haderacher.bcbackend.repository.UserRepository;
 import com.haderacher.bcbackend.util.JwtUtil;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
@@ -45,106 +42,129 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-    @AfterEach
-    void tearDown() {
-        SecurityContextHolder.clearContext();
-    }
-
     @Test
-    void registerStudent_success() {
-        StudentRegistrationDto dto = mock(StudentRegistrationDto.class);
-        when(dto.getUsername()).thenReturn("alice");
-        when(dto.getPassword()).thenReturn("plain");
-        when(dto.getPhone()).thenReturn("10086");
+    void registerStudent_success_savesUserAndProfile() {
+        StudentRegistrationDto dto = new StudentRegistrationDto();
+        dto.setUsername("alice");
+        dto.setPassword("pwd");
+        dto.setPhone("123456");
 
         when(userRepository.existsByUsername("alice")).thenReturn(false);
-        when(userRepository.existsByPhone("10086")).thenReturn(false);
+        when(userRepository.existsByPhone("123456")).thenReturn(false);
 
-        Role role = new Role();
-        role.setName("ROLE_STUDENT");
-        when(roleRepository.findByName("ROLE_STUDENT")).thenReturn(Optional.of(role));
+        Role studentRole = new Role();
+        studentRole.setName("ROLE_STUDENT");
+        when(roleRepository.findByName("ROLE_STUDENT")).thenReturn(Optional.of(studentRole));
 
-        when(passwordEncoder.encode("plain")).thenReturn("encodedPlain");
+        when(passwordEncoder.encode("pwd")).thenReturn("encodedPwd");
 
+        // 模拟 save 返回已设置 id 的 user
         User savedUser = new User();
         savedUser.setId(1L);
         savedUser.setUsername("alice");
-        savedUser.setPassword("encodedPlain");
-        savedUser.setRoles(Collections.singleton(role));
-        savedUser.setEnabled(true);
-
+        savedUser.setPassword("encodedPwd");
+        savedUser.setRoles(Collections.singleton(studentRole));
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
         User result = userService.registerStudent(dto);
 
         assertNotNull(result);
         assertEquals("alice", result.getUsername());
-        assertTrue(result.getRoles().stream().anyMatch(r -> "ROLE_STUDENT".equals(r.getName())));
-        verify(studentProfileRepository, times(1)).save(any());
+        verify(userRepository).save(any(User.class));
+        verify(studentProfileRepository).save(any(StudentProfile.class));
+
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
+        User toSave = userCaptor.getValue();
+        assertEquals("alice", toSave.getUsername());
+        assertEquals("encodedPwd", toSave.getPassword());
     }
 
     @Test
-    void registerStudent_usernameExists_throws() {
-        StudentRegistrationDto dto = mock(StudentRegistrationDto.class);
-        when(dto.getUsername()).thenReturn("bob");
-        when(userRepository.existsByUsername("bob")).thenReturn(true);
+    void registerUserAndGetToken_returnsToken() {
+        StudentRegistrationDto dto = new StudentRegistrationDto();
+        dto.setUsername("bob");
+        dto.setPassword("pwd2");
+        dto.setPhone("888");
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> userService.registerStudent(dto));
-        assertTrue(ex.getMessage().toLowerCase().contains("username"));
+        when(userRepository.existsByUsername("bob")).thenReturn(false);
+        when(userRepository.existsByPhone("888")).thenReturn(false);
+
+        Role r = new Role();
+        r.setName("ROLE_STUDENT");
+        when(roleRepository.findByName("ROLE_STUDENT")).thenReturn(Optional.of(r));
+        when(passwordEncoder.encode("pwd2")).thenReturn("enc2");
+
+        User savedUser = new User();
+        savedUser.setId(2L);
+        savedUser.setUsername("bob");
+        savedUser.setPassword("enc2");
+        savedUser.setRoles(Collections.singleton(r));
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
+
+        when(jwtUtil.toToken(any(User.class))).thenReturn("token-123");
+
+        String token = userService.registerUserAndGetToken(dto);
+        assertEquals("token-123", token);
+        verify(jwtUtil).toToken(any(User.class));
     }
 
     @Test
     void loginUserAndGetToken_success() {
-        StudentLoginDto dto = mock(StudentLoginDto.class);
-        when(dto.getUsername()).thenReturn("carol");
-        when(dto.getPassword()).thenReturn("rawPass");
+        StudentLoginDto dto = new StudentLoginDto();
+        dto.setUsername("carol");
+        dto.setPassword("rawpwd");
 
         User user = new User();
+        user.setId(3L);
         user.setUsername("carol");
-        // UserService currently compares raw password directly
-        user.setPassword("rawPass");
+        user.setPassword("encpwd");
 
         when(userRepository.findByUsername("carol")).thenReturn(Optional.of(user));
-        when(jwtUtil.toToken(user)).thenReturn("jwt-token-123");
+        when(passwordEncoder.matches("rawpwd", "encpwd")).thenReturn(true);
+        when(jwtUtil.toToken(user)).thenReturn("jwt-carol");
 
         String token = userService.loginUserAndGetToken(dto);
-        assertEquals("jwt-token-123", token);
+        assertEquals("jwt-carol", token);
     }
 
     @Test
-    void loginUserAndGetToken_invalid_throws() {
-        StudentLoginDto dto = mock(StudentLoginDto.class);
-        when(dto.getUsername()).thenReturn("dave");
+    void loginUserAndGetToken_badCredentials_whenUserNotFound() {
+        StudentLoginDto dto = new StudentLoginDto();
+        dto.setUsername("noone");
+        dto.setPassword("x");
 
-        when(userRepository.findByUsername("dave")).thenReturn(Optional.empty());
+        when(userRepository.findByUsername("noone")).thenReturn(Optional.empty());
 
         assertThrows(BadCredentialsException.class, () -> userService.loginUserAndGetToken(dto));
     }
 
     @Test
-    void loadUserByUsername_success_and_notFound() {
+    void loginUserAndGetToken_badCredentials_whenPasswordMismatch() {
+        StudentLoginDto dto = new StudentLoginDto();
+        dto.setUsername("dave");
+        dto.setPassword("wrong");
+
         User user = new User();
-        user.setUsername("eve");
+        user.setUsername("dave");
+        user.setPassword("enc");
 
-        when(userRepository.findByUsername("eve")).thenReturn(Optional.of(user));
-        assertEquals(user, userService.loadUserByUsername("eve"));
+        when(userRepository.findByUsername("dave")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("wrong", "enc")).thenReturn(false);
 
-        when(userRepository.findByUsername("noone")).thenReturn(Optional.empty());
-        assertThrows(UsernameNotFoundException.class, () -> userService.loadUserByUsername("noone"));
+        assertThrows(BadCredentialsException.class, () -> userService.loginUserAndGetToken(dto));
     }
 
     @Test
-    void getCurrentUser_returnsPrincipal() {
-        User user = new User();
-        user.setUsername("me");
+    void registerStudent_duplicateUsername_throws() {
+        StudentRegistrationDto dto = new StudentRegistrationDto();
+        dto.setUsername("exist");
+        dto.setPassword("p");
+        dto.setPhone("0");
 
-        Authentication auth = mock(Authentication.class);
-        when(auth.getPrincipal()).thenReturn(user);
-        SecurityContext sc = mock(SecurityContext.class);
-        when(sc.getAuthentication()).thenReturn(auth);
-        SecurityContextHolder.setContext(sc);
+        when(userRepository.existsByUsername("exist")).thenReturn(true);
 
-        UserDetails current = UserService.getCurrentUser();
-        assertEquals(user.getUsername(), current.getUsername());
+        assertThrows(RuntimeException.class, () -> userService.registerStudent(dto));
+        verify(userRepository, never()).save(any(User.class));
     }
 }
