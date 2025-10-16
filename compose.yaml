@@ -6,6 +6,7 @@ services:
       - mysql
       - mongo
       - redis
+      - rabbitmq
   mysql:
     image: 'mysql:latest'
     environment:
@@ -37,3 +38,25 @@ services:
     ports:
       - "6379:6379"
       - "8002:8002"
+    # 定义所有服务
+    # RabbitMQ 服务
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    hostname: my-rabbit
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    ports:
+      # 5672: AMQP 协议端口，用于应用程序连接 RabbitMQ
+      - "5672:5672"
+      # 15672: RabbitMQ 管理界面的 Web 端口
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    # 重启策略
+    # unless-stopped: 除非手动停止，否则容器总是在退出后自动重启
+    restart: unless-stopped
+volumes:
+  rabbitmq_data:
+    driver: local
