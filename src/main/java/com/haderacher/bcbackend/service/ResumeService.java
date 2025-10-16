@@ -13,6 +13,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,10 +51,10 @@ public class ResumeService {
 
             // 3. 文档分片
             List<Document> split = tokenTextSplitter.apply(docsFromPdf);
-            User currentUser = UserService.getCurrentUser();
-            String userId = currentUser.getId().toString();
-            log.debug("adding resume for user:{}", userId);
-            split.forEach(document -> document.getMetadata().put("user", userId));
+            UserDetails currentUser = UserService.getCurrentUser();
+            String userName = currentUser.getUsername().toString();
+            log.debug("adding resume for user:{}", userName);
+            split.forEach(document -> document.getMetadata().put("user", userName));
 
             // 4. 存入向量数据库
             vectorStore.add(split);
