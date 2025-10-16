@@ -1,10 +1,11 @@
 package com.haderacher.bcbackend.controller;
 
 import com.haderacher.bcbackend.common.ApiResponse;
+import com.haderacher.bcbackend.dto.StudentLoginDto;
 import com.haderacher.bcbackend.dto.StudentRegistrationDto;
-import com.haderacher.bcbackend.model.User;
 import com.haderacher.bcbackend.service.UserService;
 import com.haderacher.bcbackend.util.JwtUtil;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,9 +25,14 @@ public class UserController {
 
     @PostMapping("/students/register")
     public ApiResponse<String> studentRegister(@RequestBody StudentRegistrationDto studentRegistrationDto) {
-        User user = userService.registerStudent(studentRegistrationDto);
-        String token = jwtUtil.toToken(user);
-        return ApiResponse.success(token);
+        String token = userService.registerUserAndGetToken(studentRegistrationDto);
+        return ApiResponse.success("token: " + token);
+    }
+
+    @GetMapping("/students/login")
+    public ApiResponse<String> studentLogin(StudentLoginDto studentLoginDto) {
+        String token = userService.loginUserAndGetToken(studentLoginDto);
+        return  ApiResponse.success("token: " + token);
     }
 }
 

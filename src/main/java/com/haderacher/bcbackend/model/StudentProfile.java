@@ -21,7 +21,7 @@ public class StudentProfile {
     @JoinColumn(name = "id")
     private User user;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String realName;
 
     @Column(length = 100)
