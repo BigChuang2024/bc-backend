@@ -29,7 +29,7 @@ public class User implements UserDetails { // 2. 实现 UserDetails 接口
     @Column(nullable = false)
     private String password;
 
-    @Column(unique = true, nullable = true, length = 100)
+    @Column(unique = true, length = 100)
     private String email;
 
     private String phone;
@@ -53,6 +53,9 @@ public class User implements UserDetails { // 2. 实现 UserDetails 接口
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Resume> resumes = new HashSet<>();
 
 
     @Column(updatable = false)
