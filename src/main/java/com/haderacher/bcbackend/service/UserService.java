@@ -116,7 +116,17 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
     }
 
-    public static UserDetails getCurrentUser() {
+    public static UserDetails getCurrentUserDetails() {
         return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    public User getCurrentUser() {
+        UserDetails currentUserDetails = getCurrentUserDetails();
+        Optional<User> username = userRepository.findByUsername(currentUserDetails.getUsername());
+        if (username.isPresent()) {
+            return username.get();
+        } else {
+            throw new UsernameNotFoundException("User Not Found with username: " + currentUserDetails.getUsername());
+        }
     }
 }

@@ -1,5 +1,7 @@
 package com.haderacher.bcbackend.controller;
 
+import com.haderacher.bcbackend.common.ApiResponse;
+import com.haderacher.bcbackend.service.ResumeService;
 import com.haderacher.bcbackend.util.OSSUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,19 +22,14 @@ import java.util.Map;
 public class ResumeController {
 
     private final OSSUtil ossUtil;
+    private final ResumeService resumeService;
 
     @PostMapping("/upload")
-    public ResponseEntity<Map<String, String>> uploadResume(
-            @RequestParam("resume") MultipartFile file) {
-        String url = null;
-        try {
-            url = ossUtil.upload(file.getBytes(), file.getOriginalFilename());
-        } catch (IOException e) {
-            log.error("上传文件出现IO异常");
-            throw new RuntimeException(e);
-        }
-
-        return ResponseEntity.created(java.net.URI.create(url)).body(Map.of("url", url));
+    public ResponseEntity<ApiResponse<Map<String, String>>> uploadResume(
+            @RequestParam("resume") MultipartFile file) throws IOException {
+        String url = resumeService.uploadResume(file);
+        return ResponseEntity.created(java.net.URI.create(url)).
+                body(ApiResponse.success(Map.of("url", url)));
     }
 
     @GetMapping("/{fileName}")

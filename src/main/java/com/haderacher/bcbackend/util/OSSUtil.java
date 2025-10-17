@@ -36,7 +36,7 @@ public class OSSUtil {
      * @return 返回文件的 阿里云url 路径
      */
     public String upload(byte[] bytes, String originalFileName) {
-        var user = UserService.getCurrentUser();
+        var user = UserService.getCurrentUserDetails();
         String currentUsername = user.getUsername();
         String objectName = currentUsername + originalFileName;
         try {
@@ -78,7 +78,7 @@ public class OSSUtil {
          */
         public boolean deleteObject(String objectName) {
             // 拼接当前用户名作为前缀，定位到完整的文件路径
-            String currentUsername = UserService.getCurrentUser().getUsername();
+            String currentUsername = UserService.getCurrentUserDetails().getUsername();
             String fullObjectName = currentUsername + objectName;
 
             try {
@@ -102,7 +102,7 @@ public class OSSUtil {
      * @return 如果文件存在则返回 true, 否则返回 false
      */
     public boolean doesObjectExist(String objectName) {
-        var currentUsername = userService.getCurrentUser().getUsername();
+        var currentUsername = userService.getCurrentUserDetails().getUsername();
         objectName = currentUsername + objectName;
         try {
             // 调用SDK的doesObjectExist方法判断文件是否存在。
@@ -128,7 +128,7 @@ public class OSSUtil {
      */
     public @Nullable byte[] download(String objectName) {
         // 拼接当前用户名作为前缀，定位到完整的文件路径
-        String currentUsername = UserService.getCurrentUser().getUsername();
+        String currentUsername = UserService.getCurrentUserDetails().getUsername();
         String fullObjectName = currentUsername + objectName;
 
         try {

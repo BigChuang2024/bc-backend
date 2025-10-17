@@ -1,8 +1,12 @@
 package com.haderacher.bcbackend.service;
 
+import com.haderacher.bcbackend.config.RabbitConfiguration;
 import com.haderacher.bcbackend.exception.BadFormatException;
 import com.haderacher.bcbackend.exception.EmptyFileException;
+import com.haderacher.bcbackend.model.ParseStatus;
 import com.haderacher.bcbackend.model.Resume;
+import com.haderacher.bcbackend.model.User;
+import com.haderacher.bcbackend.mq.message.ResumeMessage;
 import com.haderacher.bcbackend.repository.ResumeRepository;
 import com.haderacher.bcbackend.service.reader.MyPagePdfDocumentReader;
 import com.haderacher.bcbackend.util.OSSUtil;
@@ -11,8 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,15 +32,36 @@ import java.util.List;
 public class ResumeService {
 
     private final OSSUtil ossUtil;
-
     private final VectorStore vectorStore;
-
     private final TokenTextSplitter tokenTextSplitter = new TokenTextSplitter();
-
     private final MyPagePdfDocumentReader pdfReader;
-
     private final ResumeRepository resumeRepository;
+    private final RabbitTemplate rabbitTemplate;
+    private final UserService userService;
 
+    public String uploadResume(MultipartFile file) throws IOException {
+        // 1. 检查文件是否合法
+        isFileValidate(file);
+        String fileUrl = ossUtil.upload(file.getBytes(), file.getOriginalFilename());
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User currentUser = userService.getCurrentUser();
+
+        // 3. 存入mysql
+        Resume resume = Resume.builder()
+                .user(currentUser)
+                .fileName(file.getOriginalFilename())
+                .fileType(file.getContentType())
+                .status(ParseStatus.PENDING)
+                .build();
+        Resume savedResume = resumeRepository.save(resume);
+        log.info("简历元数据已保存至数据库，URL: {}", fileUrl);
+        ResumeMessage msg = new ResumeMessage(fileUrl, file.getOriginalFilename(), UserService.getCurrentUserDetails().getUsername());
+        rabbitTemplate.convertAndSend(RabbitConfiguration.EXCHANGE, RabbitConfiguration.PARSE_ROUTING, msg);
+        log.info("已发送解析消息到 MQ: {}", msg);
+        return fileUrl;
+    }
+
+    @Deprecated
     @PreAuthorize("hasRole('STUDENT')")
     public String processAndStoreResume(MultipartFile file) {
         try {
@@ -42,7 +69,7 @@ public class ResumeService {
             isFileValidate(file);
             List<Document> docsFromPdf;
             try {
-                docsFromPdf = pdfReader.getDocsFromPdf(file);
+                docsFromPdf = pdfReader.getDocsFromPdf(file.getBytes(), file.getOriginalFilename());
             } catch (IOException e) {
                 throw new BadFormatException("文件类型不合法");
             }
@@ -51,8 +78,8 @@ public class ResumeService {
 
             // 3. 文档分片
             List<Document> split = tokenTextSplitter.apply(docsFromPdf);
-            UserDetails currentUser = UserService.getCurrentUser();
-            String userName = currentUser.getUsername().toString();
+            UserDetails currentUser = UserService.getCurrentUserDetails();
+            String userName = currentUser.getUsername();
             log.debug("adding resume for user:{}", userName);
             split.forEach(document -> document.getMetadata().put("user", userName));
 
@@ -76,8 +103,8 @@ public class ResumeService {
     }
 
     public ByteArrayResource downloadResume(String fileName) {
-            byte[] fileBytes = ossUtil.download(fileName);
-            return new ByteArrayResource(fileBytes);
+        byte[] fileBytes = ossUtil.download(fileName);
+        return new ByteArrayResource(fileBytes);
     }
 
 

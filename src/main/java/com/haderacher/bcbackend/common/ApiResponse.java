@@ -28,6 +28,12 @@ public class ApiResponse<T> {
         return new ApiResponse<>("操作成功", data);
     }
 
+    // 成功，并返回数据
+    public static <T> ApiResponse<T> created(T data) {
+        return new ApiResponse<>("创建成功", data);
+    }
+
+
     // 成功，并返回自定义消息和数据
     public static <T> ApiResponse<T> success(String message, T data) {
         return new ApiResponse<>(message, data);
