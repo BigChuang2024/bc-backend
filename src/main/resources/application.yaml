@@ -1,4 +1,7 @@
 spring:
+  rabbitmq:
+    password: password
+    username: user
   data:
     redis:
       host: localhost

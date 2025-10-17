@@ -1,9 +1,7 @@
 package com.haderacher.bcbackend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
@@ -15,6 +13,8 @@ import java.util.Objects;
 @Entity
 @Table(name = "resumes") // 映射到数据库表名为 'resumes'
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Resume {
 
     @Id
@@ -42,9 +42,6 @@ public class Resume {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
-
-    // --- 构造函数 ---
-    public Resume() {}
 
     // --- 生命周期回调 ---
     @PrePersist

@@ -26,13 +26,11 @@ public class ResumeContent {
     // 关联 MySQL 中的 resume.id
     private Long resumeId;
 
-    // 原始解析结构（可存为 Map 或嵌套结构）
-    private Map<String, Object> parsedJson;
 
     // 生成的 markdown
     private String markdown;
 
-    // 提取出的纯文本（全文索引用）
+    // 提取出的纯文本
     private String text;
 
     // 常用提取字段（冗余索引/查询友好）
@@ -43,7 +41,6 @@ public class ResumeContent {
     private List<ProjectExperience> project_experiences; // 项目经历
     private List<String> certifications; // 证书
     private List<CompetitionExperience> competition_experiences; // 竞赛经历
-
     private List<Map<String, Object>> educations;
 
     private LocalDateTime createdAt;

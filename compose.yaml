@@ -56,7 +56,7 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
     # 重启策略
     # unless-stopped: 除非手动停止，否则容器总是在退出后自动重启
-    restart: unless-stopped
+#    restart: unless-stopped
 volumes:
   rabbitmq_data:
     driver: local
