@@ -7,12 +7,14 @@ import com.haderacher.bcbackend.model.User;
 import com.haderacher.bcbackend.mq.message.ParseCompleteMessage;
 import com.haderacher.bcbackend.mq.message.ResumeMessage;
 import com.haderacher.bcbackend.repository.ResumeContentRepository;
+import com.haderacher.bcbackend.repository.ResumeRepository;
 import com.haderacher.bcbackend.service.reader.MyPagePdfDocumentReader;
 import com.haderacher.bcbackend.util.OSSUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +32,7 @@ public class ParseListener {
     private final MyPagePdfDocumentReader pdfReader;
     private final ResumeContentRepository contentRepository;
     private final RabbitTemplate rabbitTemplate;
+    private final ResumeRepository resumeRepository;
 
     @RabbitListener(queues = RabbitConfiguration.PARSE_QUEUE)
     public void onMessage(ResumeMessage msg) throws IOException {
@@ -51,6 +54,7 @@ public class ParseListener {
         content.setText(sbText.toString());
         ResumeContent saved = contentRepository.save(content);
         log.info("解析并保存到 Mongo, id={}", saved.getId());
+        resumeRepository.updateMongoIdByFileName(saved.getId(), msg.getFileName());
 
         // 发送解析完成消息，通知嵌入消费者
         ParseCompleteMessage complete = new ParseCompleteMessage(msg.getUsername(), saved.getId());
