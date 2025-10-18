@@ -156,6 +156,11 @@ public class ResumeService {
     public ResumeVo getResumeVoByFileName(String fileName) {
         Resume resume = resumeRepository.findByFileName(fileName).orElse(null);
         if (resume == null) return null;
+        // ownership check: only owner can fetch this resume
+        User currentUser = userService.getCurrentUser();
+        if (resume.getUser() == null || !resume.getUser().getId().equals(currentUser.getId())) {
+            throw new org.springframework.security.access.AccessDeniedException("not owner of resume");
+        }
         ResumeContent content = contentRepository.findByResumeId(resume.getId());
         return buildResumeVo(resume, content);
     }
