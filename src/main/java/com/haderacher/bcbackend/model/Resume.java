@@ -11,7 +11,10 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "resumes") // 映射到数据库表名为 'resumes'
+@Table(name = "resumes",
+        indexes = {@Index(name = "idx_user_file", columnList = "user_id,file_name")},
+        uniqueConstraints = {@UniqueConstraint(name = "uk_user_filename", columnNames = {"user_id", "file_name"})}
+)
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -25,7 +28,7 @@ public class Resume {
     @JoinColumn(name = "user_id", nullable = false) // 外键列
     private User user; // 多对一关联到 User
 
-    @Column
+    @Column(name = "file_name")
     private String fileName; // 对象存储中的fileKey
 
     private String fileType; // 文件类型，例如 "pdf", "docx"
@@ -71,4 +74,3 @@ public class Resume {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }
-
