@@ -35,8 +35,8 @@ public class ResumeController {
                 body(ApiResponse.success(Map.of("url", url)));
     }
 
-    @GetMapping("/download/{fileName}")
-    public ResponseEntity<ByteArrayResource> downloadResume(@PathVariable("fileName") String fileName) throws FileNotFoundException {
+    @GetMapping("/download/{filename}")
+    public ResponseEntity<ByteArrayResource> downloadResume(@PathVariable("filename") String fileName) throws FileNotFoundException {
         byte[] file = ossUtil.download(fileName);
         if (file == null) {
             log.warn("trying to download a not exist resume");
@@ -67,7 +67,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(list));
     }
 
-    @PutMapping("/{filename}")
+        @PutMapping("/{filename}")
     public ResponseEntity<ApiResponse<ResumeVo>> updateResume(@PathVariable("filename") String filename, @RequestBody ResumeVo vo) {
         try {
             ResumeVo updated = resumeService.updateResumeContentByFileName(filename, vo);

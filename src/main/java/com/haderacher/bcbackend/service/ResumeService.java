@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -213,12 +214,16 @@ public class ResumeService {
             vo.setJson(dto);
         }
         if (resume.getUpdatedAt() != null) {
-            vo.setTimestamp(resume.getUpdatedAt().format(TS_FORMATTER));
+            long epochSec = resume.getUpdatedAt().toEpochSecond(ZoneOffset.UTC);
+            vo.setTimestamp(String.valueOf(epochSec));
         } else if (resume.getCreatedAt() != null) {
-            vo.setTimestamp(resume.getCreatedAt().format(TS_FORMATTER));
+            long epochSec = resume.getCreatedAt().toEpochSecond(ZoneOffset.UTC);
+            vo.setTimestamp(String.valueOf(epochSec));
         }
+
         return vo;
     }
+
 
     @NotNull
     private static ResumeContentDto getResumeContentDto(ResumeContent content) {
