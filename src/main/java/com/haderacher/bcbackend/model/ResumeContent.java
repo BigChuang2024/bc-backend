@@ -41,7 +41,7 @@ public class ResumeContent {
     private List<ProjectExperience> project_experiences; // 项目经历
     private List<String> certifications; // 证书
     private List<CompetitionExperience> competition_experiences; // 竞赛经历
-    private List<Map<String, Object>> educations;
+    private List<String> educations;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

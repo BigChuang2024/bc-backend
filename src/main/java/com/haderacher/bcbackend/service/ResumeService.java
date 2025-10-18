@@ -3,6 +3,7 @@ package com.haderacher.bcbackend.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.haderacher.bcbackend.config.RabbitConfiguration;
+import com.haderacher.bcbackend.dto.ResumeContentDto;
 import com.haderacher.bcbackend.exception.BadFormatException;
 import com.haderacher.bcbackend.exception.EmptyFileException;
 import com.haderacher.bcbackend.model.ParseStatus;
@@ -19,6 +20,7 @@ import com.haderacher.bcbackend.model.valueobject.InternshipExperience;
 import com.haderacher.bcbackend.model.valueobject.WorkExperience;
 import com.haderacher.bcbackend.model.valueobject.ProjectExperience;
 import com.haderacher.bcbackend.model.valueobject.CompetitionExperience;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.AccessDeniedException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -74,47 +76,6 @@ public class ResumeService {
         rabbitTemplate.convertAndSend(RabbitConfiguration.EXCHANGE, RabbitConfiguration.PARSE_ROUTING, msg);
         log.info("已发送解析消息到 MQ: {}", msg);
         return fileUrl;
-    }
-
-    @Deprecated
-    @PreAuthorize("hasRole('STUDENT')")
-    public String processAndStoreResume(MultipartFile file) {
-        try {
-            // 1. 检查文件是否合法
-            isFileValidate(file);
-            List<Document> docsFromPdf;
-            try {
-                docsFromPdf = pdfReader.getDocsFromPdf(file.getBytes(), file.getOriginalFilename());
-            } catch (IOException e) {
-                throw new BadFormatException("文件类型不合法");
-            }
-            // 2. 上传到对象存储 (OSSService)
-            String fileUrl = ossUtil.upload(file.getBytes(), file.getOriginalFilename());
-
-            // 3. 文档分片
-            List<Document> split = tokenTextSplitter.apply(docsFromPdf);
-            UserDetails currentUser = UserService.getCurrentUserDetails();
-            String userName = currentUser.getUsername();
-            log.debug("adding resume for user:{}", userName);
-            split.forEach(document -> document.getMetadata().put("user", userName));
-
-            // 4. 存入向量数据库
-            vectorStore.add(split);
-            log.info("简历已成功分片并存入向量数据库。");
-
-            // 5. 持久化到关系型数据库
-            // 注意：这里假设您有一个 StudentService 来获取当前登录的学生
-            // Student currentStudent = studentService.getCurrentStudent();
-            Resume resume = new Resume();
-            // resume.setStudent(currentStudent); // 关联当前学生
-            resumeRepository.save(resume);
-            log.info("简历元数据已保存至数据库，URL: {}", fileUrl);
-            return fileUrl;
-        } catch (IOException e) {
-            log.error("处理上传的简历文件时发生IO异常", e);
-            // 根据您的业务需求，可以抛出自定义的运行时异常
-            throw new RuntimeException("处理文件时出错，请重试。", e);
-        }
     }
 
     @SuppressWarnings("unused")
@@ -180,59 +141,18 @@ public class ResumeService {
             existing.setResumeId(resumeId);
         }
         if (vo.getMarkdown() != null) existing.setMarkdown(vo.getMarkdown());
-        // json could be a map or object; try to convert to Map
+
+        // Use typed DTO instead of generic Object/Map
         if (vo.getJson() != null) {
-            Map<String, Object> map = objectMapper.convertValue(vo.getJson(), new TypeReference<>() {});
-            // populate known fields if present, use convertValue with TypeReference to avoid unchecked casts
-            if (map.containsKey("markdown")) existing.setMarkdown((String) map.get("markdown"));
-            try {
-                if (map.containsKey("targetPositons")) {
-                    List<String> t = objectMapper.convertValue(map.get("targetPositons"), new TypeReference<>() {});
-                    existing.setTargetPositons(t);
-                }
-            } catch (Exception e) { log.warn("failed to convert targetPositons: {}", e.getMessage()); }
-            try {
-                if (map.containsKey("skills")) {
-                    List<String> s = objectMapper.convertValue(map.get("skills"), new TypeReference<>() {});
-                    existing.setSkills(s);
-                }
-            } catch (Exception e) { log.warn("failed to convert skills: {}", e.getMessage()); }
-            try {
-                if (map.containsKey("internship_experiences")) {
-                    List<InternshipExperience> ies = objectMapper.convertValue(map.get("internship_experiences"), new TypeReference<>() {});
-                    existing.setInternship_experiences(ies);
-                }
-            } catch (Exception e) { log.warn("failed to convert internship_experiences: {}", e.getMessage()); }
-            try {
-                if (map.containsKey("work_experiences")) {
-                    List<WorkExperience> wes = objectMapper.convertValue(map.get("work_experiences"), new TypeReference<>() {});
-                    existing.setWork_experiences(wes);
-                }
-            } catch (Exception e) { log.warn("failed to convert work_experiences: {}", e.getMessage()); }
-            try {
-                if (map.containsKey("project_experiences")) {
-                    List<ProjectExperience> pes = objectMapper.convertValue(map.get("project_experiences"), new TypeReference<>() {});
-                    existing.setProject_experiences(pes);
-                }
-            } catch (Exception e) { log.warn("failed to convert project_experiences: {}", e.getMessage()); }
-            try {
-                if (map.containsKey("certifications")) {
-                    List<String> certs = objectMapper.convertValue(map.get("certifications"), new TypeReference<>() {});
-                    existing.setCertifications(certs);
-                }
-            } catch (Exception e) { log.warn("failed to convert certifications: {}", e.getMessage()); }
-            try {
-                if (map.containsKey("competition_experiences")) {
-                    List<CompetitionExperience> ces = objectMapper.convertValue(map.get("competition_experiences"), new TypeReference<>() {});
-                    existing.setCompetition_experiences(ces);
-                }
-            } catch (Exception e) { log.warn("failed to convert competition_experiences: {}", e.getMessage()); }
-            try {
-                if (map.containsKey("educations")) {
-                    List<Map<String, Object>> eds = objectMapper.convertValue(map.get("educations"), new TypeReference<>() {});
-                    existing.setEducations(eds);
-                }
-            } catch (Exception e) { log.warn("failed to convert educations: {}", e.getMessage()); }
+            ResumeContentDto dto = vo.getJson();
+            if (dto.getTargetPositons() != null) existing.setTargetPositons(dto.getTargetPositons());
+            if (dto.getSkills() != null) existing.setSkills(dto.getSkills());
+            if (dto.getInternship_experiences() != null) existing.setInternship_experiences(dto.getInternship_experiences());
+            if (dto.getWork_experiences() != null) existing.setWork_experiences(dto.getWork_experiences());
+            if (dto.getProject_experiences() != null) existing.setProject_experiences(dto.getProject_experiences());
+            if (dto.getCertifications() != null) existing.setCertifications(dto.getCertifications());
+            if (dto.getCompetition_experiences() != null) existing.setCompetition_experiences(dto.getCompetition_experiences());
+            if (dto.getEducations() != null) existing.setEducations(dto.getEducations());
         }
         ResumeContent saved = contentRepository.save(existing);
         // touch resume updatedAt
@@ -289,17 +209,8 @@ public class ResumeService {
         vo.setFileName(resume.getFileName());
         if (content != null) {
             vo.setMarkdown(content.getMarkdown());
-            Map<String, Object> json = Map.of(
-                    "targetPositons", content.getTargetPositons(),
-                    "skills", content.getSkills(),
-                    "internship_experiences", content.getInternship_experiences(),
-                    "work_experiences", content.getWork_experiences(),
-                    "project_experiences", content.getProject_experiences(),
-                    "certifications", content.getCertifications(),
-                    "competition_experiences", content.getCompetition_experiences(),
-                    "educations", content.getEducations()
-            );
-            vo.setJson(json);
+            ResumeContentDto dto = getResumeContentDto(content);
+            vo.setJson(dto);
         }
         if (resume.getUpdatedAt() != null) {
             vo.setTimestamp(resume.getUpdatedAt().format(TS_FORMATTER));
@@ -307,6 +218,20 @@ public class ResumeService {
             vo.setTimestamp(resume.getCreatedAt().format(TS_FORMATTER));
         }
         return vo;
+    }
+
+    @NotNull
+    private static ResumeContentDto getResumeContentDto(ResumeContent content) {
+        ResumeContentDto dto = new ResumeContentDto();
+        dto.setTargetPositons(content.getTargetPositons());
+        dto.setSkills(content.getSkills());
+        dto.setInternship_experiences(content.getInternship_experiences());
+        dto.setWork_experiences(content.getWork_experiences());
+        dto.setProject_experiences(content.getProject_experiences());
+        dto.setCertifications(content.getCertifications());
+        dto.setCompetition_experiences(content.getCompetition_experiences());
+        dto.setEducations(content.getEducations());
+        return dto;
     }
 
 }
