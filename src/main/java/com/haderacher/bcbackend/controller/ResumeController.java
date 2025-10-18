@@ -32,7 +32,7 @@ public class ResumeController {
                 body(ApiResponse.success(Map.of("url", url)));
     }
 
-    @GetMapping("/{fileName}")
+    @GetMapping("/download/{fileName}")
     public ResponseEntity<ByteArrayResource> downloadResume(@PathVariable("fileName") String fileName) throws FileNotFoundException {
         byte[] file = ossUtil.download(fileName);
         ByteArrayResource fileResource = null;
