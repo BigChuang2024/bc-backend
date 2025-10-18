@@ -19,6 +19,7 @@ import com.haderacher.bcbackend.model.valueobject.InternshipExperience;
 import com.haderacher.bcbackend.model.valueobject.WorkExperience;
 import com.haderacher.bcbackend.model.valueobject.ProjectExperience;
 import com.haderacher.bcbackend.model.valueobject.CompetitionExperience;
+import org.springframework.security.access.AccessDeniedException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
@@ -238,11 +239,21 @@ public class ResumeService {
     // --- filename based helpers ---
     public ResumeVo updateResumeContentByFileName(String fileName, ResumeVo vo) {
         Resume resume = resumeRepository.findByFileName(fileName).orElseThrow(() -> new IllegalArgumentException("resume not found"));
+        // ownership check
+        User currentUser = userService.getCurrentUser();
+        if (resume.getUser() == null || !resume.getUser().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("not owner of resume");
+        }
         return updateResumeContent(resume.getId(), vo);
     }
 
     public void deleteResumeByFileName(String fileName) {
         Resume resume = resumeRepository.findByFileName(fileName).orElseThrow(() -> new IllegalArgumentException("resume not found"));
+        // ownership check
+        User currentUser = userService.getCurrentUser();
+        if (resume.getUser() == null || !resume.getUser().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("not owner of resume");
+        }
         deleteResume(resume.getId());
     }
 
