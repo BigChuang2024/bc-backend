@@ -1,6 +1,7 @@
 package com.haderacher.bcbackend.controller;
 
 import com.haderacher.bcbackend.common.ApiResponse;
+import com.haderacher.bcbackend.dto.ResumeVo;
 import com.haderacher.bcbackend.service.ResumeService;
 import com.haderacher.bcbackend.util.OSSUtil;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/resumes")
@@ -35,12 +37,11 @@ public class ResumeController {
     @GetMapping("/download/{fileName}")
     public ResponseEntity<ByteArrayResource> downloadResume(@PathVariable("fileName") String fileName) throws FileNotFoundException {
         byte[] file = ossUtil.download(fileName);
-        ByteArrayResource fileResource = null;
         if (file == null) {
             log.warn("trying to download a not exist resume");
             throw new FileNotFoundException();
         }
-        fileResource = new ByteArrayResource(file);
+        ByteArrayResource fileResource = new ByteArrayResource(file);
         ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
                 .filename(fileName, StandardCharsets.UTF_8)
                 .build();
@@ -51,4 +52,38 @@ public class ResumeController {
                 .contentLength(fileResource.contentLength())
                 .body(fileResource);
     }
+
+    @GetMapping("/{filename}")
+    public ResponseEntity<ApiResponse<ResumeVo>> getResume(@PathVariable("filename") String filename) {
+        ResumeVo vo = resumeService.getResumeVoByFileName(filename);
+        if (vo == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.fail("resume not found"));
+        return ResponseEntity.ok(ApiResponse.success(vo));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<ResumeVo>>> listResumes() {
+        List<ResumeVo> list = resumeService.listResumesForCurrentUser();
+        return ResponseEntity.ok(ApiResponse.success(list));
+    }
+
+    @PutMapping("/{filename}")
+    public ResponseEntity<ApiResponse<ResumeVo>> updateResume(@PathVariable("filename") String filename, @RequestBody ResumeVo vo) {
+        try {
+            ResumeVo updated = resumeService.updateResumeContentByFileName(filename, vo);
+            return ResponseEntity.ok(ApiResponse.success(updated));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.fail(e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/{filename}")
+    public ResponseEntity<ApiResponse<Object>> deleteResume(@PathVariable("filename") String filename) {
+        try {
+            resumeService.deleteResumeByFileName(filename);
+            return ResponseEntity.ok(ApiResponse.success(Map.of()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.fail(e.getMessage()));
+        }
+    }
+
 }
