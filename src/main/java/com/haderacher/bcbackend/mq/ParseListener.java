@@ -6,6 +6,7 @@ import com.haderacher.bcbackend.model.ResumeContent;
 import com.haderacher.bcbackend.model.User;
 import com.haderacher.bcbackend.mq.message.ParseCompleteMessage;
 import com.haderacher.bcbackend.mq.message.ResumeMessage;
+import com.haderacher.bcbackend.mq.message.ExtractRequestMessage;
 import com.haderacher.bcbackend.repository.ResumeContentRepository;
 import com.haderacher.bcbackend.repository.ResumeRepository;
 import com.haderacher.bcbackend.service.reader.MyPagePdfDocumentReader;
@@ -14,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,9 +43,8 @@ public class ParseListener {
         byte[] bytes = ossUtil.download(msg.getFileName());
 
         List<Document> docs = pdfReader.getDocsFromPdf(bytes, msg.getFileName());
-
-        // 生成简单的 markdown 与 json（这里示例把所有段落拼起来）
         StringBuilder sbText = new StringBuilder();
+
         for (Document d : docs) {
             sbText.append(d.getText()).append("\n\n");
         }
@@ -60,5 +59,10 @@ public class ParseListener {
         ParseCompleteMessage complete = new ParseCompleteMessage(msg.getUsername(), saved.getId());
         rabbitTemplate.convertAndSend(RabbitConfiguration.EXCHANGE, RabbitConfiguration.EMBED_ROUTING, complete);
         log.info("已发送嵌入消息: {}", complete);
+
+        // 发送提取结构化字段的请求，通知 ExtractListener
+        ExtractRequestMessage extractReq = new ExtractRequestMessage(msg.getUsername(), saved.getId());
+        rabbitTemplate.convertAndSend(RabbitConfiguration.EXCHANGE, RabbitConfiguration.EXTRACT_ROUTING, extractReq);
+        log.info("已发送提取字段消息: {}", extractReq);
     }
 }

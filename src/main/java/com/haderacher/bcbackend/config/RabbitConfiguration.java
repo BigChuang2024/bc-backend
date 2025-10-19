@@ -16,8 +16,10 @@ public class RabbitConfiguration {
     public static final String EXCHANGE = "resume-exchange";
     public static final String PARSE_QUEUE = "resume.parse.queue";
     public static final String EMBED_QUEUE = "resume.embed.queue";
+    public static final String EXTRACT_QUEUE = "resume.extract.queue";
     public static final String PARSE_ROUTING = "resume.parse";
     public static final String EMBED_ROUTING = "resume.embed";
+    public static final String EXTRACT_ROUTING = "resume.extract";
 
     @Bean
     public TopicExchange resumeExchange() {
@@ -35,6 +37,11 @@ public class RabbitConfiguration {
     }
 
     @Bean
+    public Queue extractQueue() {
+        return new Queue(EXTRACT_QUEUE, true);
+    }
+
+    @Bean
     public Binding parseBinding(Queue parseQueue, TopicExchange resumeExchange) {
         return BindingBuilder.bind(parseQueue).to(resumeExchange).with(PARSE_ROUTING);
     }
@@ -42,6 +49,11 @@ public class RabbitConfiguration {
     @Bean
     public Binding embedBinding(Queue embedQueue, TopicExchange resumeExchange) {
         return BindingBuilder.bind(embedQueue).to(resumeExchange).with(EMBED_ROUTING);
+    }
+
+    @Bean
+    public Binding extractBinding(Queue extractQueue, TopicExchange resumeExchange) {
+        return BindingBuilder.bind(extractQueue).to(resumeExchange).with(EXTRACT_ROUTING);
     }
 
     @Bean
