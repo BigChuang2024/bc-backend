@@ -29,7 +29,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/students/register", "/students/login", "/actuator/*", "/ai/*").permitAll()
+                        .requestMatchers("/students/register",
+                                "/students/login",
+                                "/actuator/*",
+                                "/ai/*",
+                                "/recruiters/register",
+                                "/recruiters/login").permitAll()
                         .anyRequest().authenticated()
                 );
 

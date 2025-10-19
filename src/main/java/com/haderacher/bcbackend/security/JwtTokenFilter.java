@@ -47,6 +47,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 });
             }
         });
+        String path = request.getRequestURI();
+        logger.info("Processing request for path: " + path);
         filterChain.doFilter(request, response);
     }
 
@@ -68,4 +70,5 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
         }
     }
+
 }

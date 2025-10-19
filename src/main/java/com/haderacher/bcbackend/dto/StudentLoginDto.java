@@ -2,8 +2,6 @@ package com.haderacher.bcbackend.dto;
 
 import lombok.Data;
 
-@Data
-public class StudentLoginDto {
-    private String username;
-    private String password;
+public class StudentLoginDto extends BaseLoginDto {
+    // 可以添加学生特有的登录字段
 }

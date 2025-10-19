@@ -6,6 +6,7 @@ import com.haderacher.bcbackend.dto.StudentRegistrationDto;
 import com.haderacher.bcbackend.model.Role;
 import com.haderacher.bcbackend.model.StudentProfile;
 import com.haderacher.bcbackend.model.User;
+import com.haderacher.bcbackend.model.UserRole;
 import com.haderacher.bcbackend.repository.RoleRepository;
 import com.haderacher.bcbackend.repository.StudentProfileRepository;
 import com.haderacher.bcbackend.repository.UserRepository;
@@ -66,7 +67,7 @@ class UserServiceTest {
         savedUser.setRoles(Collections.singleton(studentRole));
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
-        User result = userService.registerStudent(dto);
+        User result = userService.registerUser(dto, UserRole.STUDENT);
 
         assertNotNull(result);
         assertEquals("alice", result.getUsername());
@@ -104,7 +105,7 @@ class UserServiceTest {
 
         when(jwtUtil.toToken(any(User.class))).thenReturn("token-123");
 
-        String token = userService.registerUserAndGetToken(dto);
+        String token = userService.registerAndGetToken(dto, UserRole.STUDENT);
         assertEquals("token-123", token);
         verify(jwtUtil).toToken(any(User.class));
     }
@@ -164,7 +165,7 @@ class UserServiceTest {
 
         when(userRepository.existsByUsername("exist")).thenReturn(true);
 
-        assertThrows(RuntimeException.class, () -> userService.registerStudent(dto));
+        assertThrows(RuntimeException.class, () -> userService.registerUser(dto,UserRole.STUDENT));
         verify(userRepository, never()).save(any(User.class));
     }
 }
