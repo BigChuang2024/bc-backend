@@ -6,6 +6,9 @@ import com.haderacher.bcbackend.dto.UpdateJobDto;
 import com.haderacher.bcbackend.model.Job;
 import com.haderacher.bcbackend.service.JobService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -15,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/jobs")
+@RequestMapping("jobs")
 public class JobController {
     private final JobService jobService;
 
@@ -24,8 +27,9 @@ public class JobController {
     }
 
     @GetMapping
-    public List<Job> list() {
-        return jobService.findAll();
+    public ApiResponse<Page<Job>> list(@PageableDefault(page = 0, size = 20) Pageable pageable) {
+        Page<Job> page = jobService.findAll(pageable);
+        return ApiResponse.success(page);
     }
 
     @GetMapping("/{id}")

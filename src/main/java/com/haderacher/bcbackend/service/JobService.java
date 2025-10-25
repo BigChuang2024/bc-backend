@@ -6,6 +6,8 @@ import com.haderacher.bcbackend.exception.ResourceNotFoundException;
 import com.haderacher.bcbackend.model.Job;
 import com.haderacher.bcbackend.repository.JobRepository;
 import com.haderacher.bcbackend.service.mapper.JobMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,10 @@ public class JobService {
 
     public List<Job> findAll() {
         return jobRepository.findAll();
+    }
+
+    public Page<Job> findAll(Pageable pageable) {
+        return jobRepository.findAll(pageable);
     }
 
     public Job findById(UUID id) {

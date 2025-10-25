@@ -15,7 +15,6 @@ public final class JobMapper {
         Job job = new Job();
         job.setName(dto.getName());
         job.setDescription(dto.getDescription());
-        job.setCompany(dto.getCompany());
         job.setRecruiter(dto.getRecruiter());
         job.setAddress(dto.getAddress());
         job.setDegreeReq(dto.getDegreeReq());
@@ -32,7 +31,6 @@ public final class JobMapper {
     public static void updateFromDto(UpdateJobDto dto, Job job) {
         job.setName(dto.getName());
         job.setDescription(dto.getDescription());
-        job.setCompany(dto.getCompany());
         job.setRecruiter(dto.getRecruiter());
         job.setAddress(dto.getAddress());
         job.setDegreeReq(dto.getDegreeReq());
