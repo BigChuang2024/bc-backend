@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "job")
@@ -56,6 +53,9 @@ public class Job {
 
     @Column(name = "category")
     private String category;
+
+    @ManyToMany(mappedBy = "jobs", fetch = FetchType.LAZY)
+    private Set<Skill> skills = new HashSet<>();
 
     @Override
     public final boolean equals(Object o) {

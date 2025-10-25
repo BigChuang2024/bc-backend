@@ -34,7 +34,12 @@ public class SecurityConfig {
                                 "/actuator/*",
                                 "/ai/*",
                                 "/recruiters/register",
-                                "/recruiters/login").permitAll()
+                                "/recruiters/login",
+                                "jobs",
+                                "/jobs/*",
+                                "skills",
+                                "skills/*"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 );
 
