@@ -31,7 +31,7 @@ public class JobService {
         return jobRepository.findAll(pageable);
     }
 
-    public Job findById(UUID id) {
+    public Job findById(Long id) {
         return jobRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found: " + id));
     }
@@ -43,14 +43,14 @@ public class JobService {
     }
 
     @Transactional
-    public Job update(UUID id, UpdateJobDto dto) {
+    public Job update(Long id, UpdateJobDto dto) {
         Job existing = findById(id);
         JobMapper.updateFromDto(dto, existing);
         return jobRepository.save(existing);
     }
 
     @Transactional
-    public void delete(UUID id) {
+    public void delete(Long id) {
         Job existing = findById(id);
         jobRepository.delete(existing);
     }

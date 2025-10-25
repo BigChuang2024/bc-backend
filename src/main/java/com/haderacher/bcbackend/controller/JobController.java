@@ -33,7 +33,7 @@ public class JobController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<Job> getById(@PathVariable UUID id) {
+    public ApiResponse<Job> getById(@PathVariable Long id) {
         Job job = jobService.findById(id);
         return ApiResponse.success(job);
     }
@@ -50,13 +50,13 @@ public class JobController {
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<Job> update(@PathVariable UUID id, @Valid @RequestBody UpdateJobDto dto) {
+    public ApiResponse<Job> update(@PathVariable Long id, @Valid @RequestBody UpdateJobDto dto) {
         Job updated = jobService.update(id, dto);
         return ApiResponse.success(updated);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         jobService.delete(id);
         return ResponseEntity.noContent().build();
     }
