@@ -31,3 +31,21 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### 敏感配置文件 ###
+application-local.yaml
+application-dev.yaml
+application-prod.yaml
+.env.properties
+.env.local
+.env.production
+.env.*
+.env.properties
+
+### 临时文件 ###
+*.tmp
+*.temp
+
+### 日志文件 ###
+*.log
+logs/

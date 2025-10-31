@@ -1,12 +1,4 @@
 services:
-  app:
-    build: .
-    network_mode: host
-    depends_on:
-      - mysql
-      - mongo
-      - redis
-      - rabbitmq
   mysql:
     image: 'mysql:latest'
     environment:
