@@ -1,6 +1,6 @@
 # CI 环境配置
 # 此配置用于 GitHub Actions CI 环境
-
+# 继承application.yaml中的通用配置
 spring:
   rabbitmq:
     password: password
@@ -22,35 +22,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    database: mysql
   ai:
-    model:
-      embedding: openai
-      chat: deepseek
     openai:
       api-key: ${OPENAI_API_KEY:}
       base-url: ${OPENAI_BASE_URL:https://dashscope.aliyuncs.com/compatible-mode}
-      embedding:
-        options:
-          model: ${OPENAI_EMBEDDING_MODEL:text-embedding-v4}
     deepseek:
       api-key: ${DEEPSEEK_API_KEY:}
-      chat:
-        options:
-          model: ${DEEPSEEK_CHAT_MODEL:deepseek-chat}
-          temperature: ${DEEPSEEK_TEMPERATURE:0.8}
-
 jwt:
   secret: test-jwt-secret-for-ci-only
-  sessionTime: 86400
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-
 alioss:
-  OSS_ACCESS_KEY_ID: ${OSS_ACCESS_KEY_ID:}
-  OSS_ACCESS_KEY_SECRET: ${OSS_ACCESS_KEY_SECRET:}
   bucket: bc-backend-test-bucket

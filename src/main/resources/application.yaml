@@ -1,0 +1,52 @@
+# 基础应用配置
+# 此文件包含所有环境的通用配置
+
+spring:
+  application:
+    name: bc-backend
+  data:
+    redis:
+      client-type: jedis
+  profiles:
+    active: local
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: validate
+  ai:
+    model:
+      embedding: openai
+      chat: deepseek
+    openai:
+      embedding:
+        options:
+          model: text-embedding-v4
+    deepseek:
+      chat:
+        options:
+          model: deepseek-chat
+          temperature: 0.8
+
+# JWT配置
+jwt:
+  sessionTime: 86400
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+# OSS配置
+alioss:
+  OSS_ACCESS_KEY_ID: ${OSS_ACCESS_KEY_ID:}
+  OSS_ACCESS_KEY_SECRET: ${OSS_ACCESS_KEY_SECRET:}
+# 日志配置
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.ai.vectorstore: DEBUG
+    com.haderacher.bcbackend: INFO
+# 调试模式
+debug: false
