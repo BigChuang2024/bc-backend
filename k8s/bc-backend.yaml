@@ -1,0 +1,122 @@
+# Spring Boot应用部署配置
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bc-backend
+  namespace: bc-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bc-backend
+  template:
+    metadata:
+      labels:
+        app: bc-backend
+    spec:
+      containers:
+      - name: bc-backend
+        image: ghcr.io/bigchuang2024/bc-backend:latest
+        ports:
+        - containerPort: 8080
+        env:
+        # 数据库连接配置
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://mysql.bc-backend.svc.cluster.local:3306/career_plan"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "user"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: "secret"
+
+        # MongoDB配置
+        - name: SPRING_DATA_MONGODB_URI
+          value: "mongodb://root:example@mongodb.bc-backend.svc.cluster.local:27017/bigchuang?authSource=admin"
+
+        # Redis配置
+        - name: SPRING_DATA_REDIS_HOST
+          value: "redis.bc-backend.svc.cluster.local"
+        - name: SPRING_DATA_REDIS_PORT
+          value: "6379"
+
+        # RabbitMQ配置
+        - name: SPRING_RABBITMQ_HOST
+          value: "rabbitmq.bc-backend.svc.cluster.local"
+        - name: SPRING_RABBITMQ_PORT
+          value: "5672"
+        - name: SPRING_RABBITMQ_USERNAME
+          value: "user"
+        - name: SPRING_RABBITMQ_PASSWORD
+          value: "password"
+
+        # AI配置 - 使用环境变量
+        - name: DEEPSEEK_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ai-secrets
+              key: deepseek-api-key
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ai-secrets
+              key: openai-api-key
+
+        # JWT配置
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jwt-secret
+              key: jwt-secret
+
+        # OSS配置
+        - name: OSS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: oss-secrets
+              key: access-key-id
+        - name: OSS_ACCESS_KEY_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: oss-secrets
+              key: access-key-secret
+
+        # 应用配置
+        - name: SPRING_PROFILES_ACTIVE
+          value: "prod"
+        - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+          value: "validate"
+
+        # 健康检查
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 5
+
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+---
+# Spring Boot应用服务配置
+apiVersion: v1
+kind: Service
+metadata:
+  name: bc-backend
+  namespace: bc-backend
+spec:
+  selector:
+    app: bc-backend
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: NodePort
