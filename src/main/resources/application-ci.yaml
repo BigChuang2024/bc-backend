@@ -15,12 +15,17 @@ spring:
       host: localhost
       port: 6379
     mongodb:
-      uri: mongodb://root:example@localhost:27017/bigchuang?authSource=admin
+      uri: mongodb://localhost:27017/bigchuang?authSource=admin
+      authentication-database: admin
+      username: root
+      password: example
   rabbitmq:
     host: localhost
     port: 5672
     username: user
     password: password
+  config:
+    import: classpath:.env.properties
 
 jwt:
   secret: test-jwt-secret-for-ci-only
