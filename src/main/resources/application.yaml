@@ -31,7 +31,7 @@ spring:
       uri: ${MONGODB_URI}
       username: ${MONGODB_USERNAME}
       password: ${MONGODB_PASSWORD}
-      database: ${MONGODB_DATABASE}
+      database: bigchuang
       authentication-database: ${MONGODB_AUTH_DATABASE}
 
   # RabbitMQ通用配置

@@ -19,12 +19,12 @@ spring:
       authentication-database: admin
       username: root
       password: example
+      database: bigchuang
   rabbitmq:
     host: localhost
     port: 5672
     username: user
     password: password
-
 jwt:
   secret: test-jwt-secret-for-ci-only
 
