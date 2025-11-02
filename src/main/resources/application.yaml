@@ -8,7 +8,7 @@ spring:
     redis:
       client-type: jedis
   profiles:
-    active: local
+    active: prod
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
@@ -45,8 +45,9 @@ alioss:
 # 日志配置
 logging:
   level:
+    org.springframework.*: DEBUG
     org.springframework.security: DEBUG
     org.springframework.ai.vectorstore: DEBUG
     com.haderacher.bcbackend: INFO
 # 调试模式
-debug: false
+debug: true

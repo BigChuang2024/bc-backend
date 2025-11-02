@@ -41,6 +41,7 @@ application-prod.yaml
 .env.production
 .env.*
 .env.properties
+/k8s/secrets.yaml
 
 ### 临时文件 ###
 *.tmp

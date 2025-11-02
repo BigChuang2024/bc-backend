@@ -4,6 +4,7 @@ import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.vectorstore.redis.RedisVectorStore;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -11,6 +12,9 @@ import redis.clients.jedis.JedisPooled;
 
 @Configuration
 public class VectorStoreConfiguration {
+
+    @Value("${spring.data.redis.host}")
+    private String redisHost;
 
     @Bean
     @Primary
@@ -34,6 +38,7 @@ public class VectorStoreConfiguration {
 
     @Bean
     public JedisPooled jedisPooled() {
-        return new JedisPooled("localhost", 6379);
+
+        return new JedisPooled(redisHost, 6379);
     }
 }
