@@ -30,7 +30,7 @@ jobs:
         run: docker compose up -d mysql mongo redis rabbitmq # 仅启动测试需要的服务
 
       - name: Wait for services to be ready
-        run: sleep 30 # 等待 30 秒，确保数据库等服务完全启动
+        run: sleep 10 # 等待 30 秒，确保数据库等服务完全启动
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
