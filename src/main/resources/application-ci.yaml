@@ -24,8 +24,6 @@ spring:
     port: 5672
     username: user
     password: password
-  config:
-    import: classpath:.env.properties
 
 jwt:
   secret: test-jwt-secret-for-ci-only
