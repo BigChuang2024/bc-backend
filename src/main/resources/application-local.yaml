@@ -1,0 +1,18 @@
+# 本地开发环境配置
+# 此配置通过环境变量加载所有敏感信息
+# 继承application.yaml中的通用配置
+
+spring:
+  config:
+    import: optional:classpath:.env.properties
+  # 本地环境特有配置 - 覆盖通用配置
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:create-drop}
+
+logging:
+  level:
+    org.springframework.security: INFO
+    org.springframework.ai.vectorstore: INFO
+    com.haderacher.bcbackend: INFO
+    org.springframework.ai.deepseek: DEBUG

@@ -1,0 +1,48 @@
+# 生产环境配置
+# 此配置用于Kubernetes生产环境
+# 继承application.yaml中的通用配置
+
+spring:
+  # 生产环境特有配置 - 覆盖通用配置
+  jpa:
+    hibernate:
+      ddl-auto: create
+  datasource:
+    username: ${DATASOURCE_USERNAME:user}
+    password: ${DATASOURCE_PASSWORD:secret}
+    url: ${DATASOURCE_URL:jdbc:mysql://mysql.bc-backend.svc.cluster.local:3306/career_plan}
+  # Redis通用配置
+  data:
+    redis:
+      client-type: jedis
+      host: ${REDIS_HOST:redis.bc-backend.svc.cluster.local}
+      port: ${REDIS_PORT:6379}
+
+    # MongoDB通用配置
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://mongodb.bc-backend.svc.cluster.local:27017/bigchuang?authSource=admin}
+      username: ${MONGODB_USERNAME:root}
+      password: ${MONGODB_PASSWORD:example}
+      database: ${MONGODB_DATABASE:bigchuang}
+      authentication-database: ${MONGODB_AUTH_DATABASE:admin}
+
+  # RabbitMQ通用配置
+  rabbitmq:
+    host: ${RABBITMQ_HOST:rabbitmq.bc-backend.svc.cluster.local}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:user}
+    password: ${RABBITMQ_PASSWORD:password}
+# JWT配置 - 生产环境
+jwt:
+  secret: ${JWT_SECRET:default-prod-jwt-secret-change-in-production}
+
+# 生产环境日志配置
+logging:
+  level:
+    org.springframework.security: INFO
+    org.springframework.ai.vectorstore: INFO
+    com.haderacher.bcbackend: INFO
+    org.springframework.ai.deepseek: INFO
+
+# 生产环境关闭调试模式
+debug: false

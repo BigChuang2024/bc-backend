@@ -5,6 +5,8 @@ metadata:
   name: bc-backend
   namespace: bc-backend
 spec:
+  strategy:
+    type: RollingUpdate
   replicas: 1
   selector:
     matchLabels:

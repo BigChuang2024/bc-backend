@@ -2,33 +2,13 @@
 # 此配置用于 GitHub Actions CI 环境
 # 继承application.yaml中的通用配置
 spring:
-  rabbitmq:
-    password: password
-    username: user
-  data:
-    redis:
-      host: localhost
-      port: 6379
-    mongodb:
-      uri: mongodb://root:example@localhost:27017/bigchuang?authSource=admin
-      username: root
-      password: example
-      database: bigchuang
-      authentication-database: admin
-  datasource:
-    url: jdbc:mysql://127.0.0.1:3306/career_plan
-    username: user
-    password: secret
+  # CI环境特有配置 - 覆盖通用配置
   jpa:
     hibernate:
       ddl-auto: create-drop
-  ai:
-    openai:
-      api-key: ${OPENAI_API_KEY:}
-      base-url: ${OPENAI_BASE_URL:https://dashscope.aliyuncs.com/compatible-mode}
-    deepseek:
-      api-key: ${DEEPSEEK_API_KEY:}
+
 jwt:
   secret: test-jwt-secret-for-ci-only
+
 alioss:
   bucket: bc-backend-test-bucket

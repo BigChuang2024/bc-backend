@@ -4,50 +4,92 @@
 spring:
   application:
     name: bc-backend
-  data:
-    redis:
-      client-type: jedis
   profiles:
-    active: prod
+    active: local
+
+  # 数据库通用配置
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+
+  # JPA通用配置
   jpa:
     database: mysql
     hibernate:
-      ddl-auto: validate
+      ddl-auto: ${JPA_DDL_AUTO}
+
+  # Redis通用配置
+  data:
+    redis:
+      client-type: jedis
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+    # MongoDB通用配置
+    mongodb:
+      uri: ${MONGODB_URI}
+      username: ${MONGODB_USERNAME}
+      password: ${MONGODB_PASSWORD}
+      database: ${MONGODB_DATABASE}
+      authentication-database: ${MONGODB_AUTH_DATABASE}
+
+  # RabbitMQ通用配置
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
+  # AI通用配置
   ai:
     model:
       embedding: openai
       chat: deepseek
     openai:
+      api-key: ${OPENAI_API_KEY:}
+      base-url: ${OPENAI_BASE_URL:https://dashscope.aliyuncs.com/compatible-mode}
       embedding:
         options:
           model: text-embedding-v4
     deepseek:
+      api-key: ${DEEPSEEK_API_KEY:}
       chat:
         options:
           model: deepseek-chat
           temperature: 0.8
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      embedding:
+        options:
+          model: ${OLLAMA_EMBEDDING_MODEL:nomic-embed-text}
 
-# JWT配置
+# JWT通用配置
 jwt:
-  sessionTime: 86400
+  secret: ${JWT_SECRET:S3BIdWVCb0VSUEJuclBYbnVUNGY5NURDMTdZVWVsQjI0THNtS3N5c3RObkROVW0xS0lOSXRaV3Z0Z2dJSUZTaQ==}
+  sessionTime: ${JWT_SESSION_TIME:86400}
+
+# OSS通用配置
+alioss:
+  OSS_ACCESS_KEY_ID: ${OSS_ACCESS_KEY_ID:}
+  OSS_ACCESS_KEY_SECRET: ${OSS_ACCESS_KEY_SECRET:}
+  bucket: ${OSS_BUCKET:bc-resume}
+
 # 管理端点配置
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-# OSS配置
-alioss:
-  OSS_ACCESS_KEY_ID: ${OSS_ACCESS_KEY_ID:}
-  OSS_ACCESS_KEY_SECRET: ${OSS_ACCESS_KEY_SECRET:}
-# 日志配置
+
+# 日志通用配置
 logging:
   level:
     org.springframework.*: DEBUG
     org.springframework.security: DEBUG
     org.springframework.ai.vectorstore: DEBUG
+    org.springframework.ai.deepseek: DEBUG
     com.haderacher.bcbackend: INFO
+
 # 调试模式
 debug: true

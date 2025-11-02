@@ -33,15 +33,12 @@ build/
 .vscode/
 
 ### 敏感配置文件 ###
-application-local.yaml
-application-dev.yaml
-application-prod.yaml
 .env.properties
 .env.local
 .env.production
 .env.*
 .env.properties
-/k8s/secrets.yaml
+k8s/secrets.yaml
 
 ### 临时文件 ###
 *.tmp
