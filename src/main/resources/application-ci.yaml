@@ -6,6 +6,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+  datasource:
+    url: jdbc:mysql://localhost:3306/career_plan
+  data:
+    redis:
+      url: localhost
+      port: 6379
+    mongodb:
+      uri: mongodb://root:example@localhost:27017/bigchuang?authSource=admin
+  rabbitmq:
+    host: localhost
 
 jwt:
   secret: test-jwt-secret-for-ci-only
