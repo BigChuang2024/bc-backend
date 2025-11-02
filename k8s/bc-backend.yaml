@@ -19,6 +19,7 @@ spec:
       containers:
       - name: bc-backend
         image: ghcr.io/bigchuang2024/bc-backend:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         env:
