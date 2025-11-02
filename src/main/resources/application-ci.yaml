@@ -5,7 +5,7 @@ spring:
   # CI环境特有配置 - 覆盖通用配置
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
   datasource:
     url: jdbc:mysql://localhost:3306/career_plan
     username: user
