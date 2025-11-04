@@ -82,14 +82,5 @@ management:
       exposure:
         include: "*"
 
-# 日志通用配置
-logging:
-  level:
-    org.springframework.*: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.ai.vectorstore: DEBUG
-    org.springframework.ai.deepseek: DEBUG
-    com.haderacher.bcbackend: INFO
-
 # 调试模式
 debug: true

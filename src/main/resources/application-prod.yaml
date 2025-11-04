@@ -39,10 +39,8 @@ jwt:
 # 生产环境日志配置
 logging:
   level:
-    org.springframework.security: INFO
-    org.springframework.ai.vectorstore: INFO
-    com.haderacher.bcbackend: INFO
-    org.springframework.ai.deepseek: INFO
+    org.springframework.data: INFO
+
 
 # 生产环境关闭调试模式
-debug: false
+debug: true

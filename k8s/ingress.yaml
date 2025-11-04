@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spring-app-ingress
+spec:
+  ingressClassName: nginx # 确保您有安装 Ingress Controller (如 Nginx)
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bc-backend # 指向正确的 NodePort Service
+                port:
+                  number: 8080        # Service 的端口
