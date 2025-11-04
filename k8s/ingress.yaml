@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: spring-app-ingress
 spec:
-  ingressClassName: nginx # 确保您有安装 Ingress Controller (如 Nginx)
+  ingressClassName: nginx
   rules:
     - http:
         paths:

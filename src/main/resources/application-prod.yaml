@@ -40,7 +40,10 @@ jwt:
 logging:
   level:
     org.springframework.data: INFO
+    org.springframework.web: DEBUG
+    org.apache.tomcat: INFO
+    org.springframework.security: DEBUG
 
 
 # 生产环境关闭调试模式
-debug: true
+debug: false
