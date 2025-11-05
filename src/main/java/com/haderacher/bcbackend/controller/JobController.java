@@ -26,10 +26,16 @@ public class JobController {
         this.jobService = jobService;
     }
 
-    @GetMapping
+    @GetMapping(params = {"page", "size"})
     public ApiResponse<Page<Job>> list(@PageableDefault(page = 0, size = 20) Pageable pageable) {
         Page<Job> page = jobService.findAll(pageable);
         return ApiResponse.success(page);
+    }
+
+    @GetMapping()
+    public ApiResponse<List<Job>> list() {
+        List<Job> all = jobService.findAll();
+        return ApiResponse.success(all);
     }
 
     @GetMapping("/{id}")
