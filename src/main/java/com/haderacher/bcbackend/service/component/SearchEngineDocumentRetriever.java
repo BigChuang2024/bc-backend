@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.rag.Query;
 import org.springframework.ai.rag.retrieval.search.DocumentRetriever;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -19,12 +20,18 @@ import java.util.List;
 @Component
 public class SearchEngineDocumentRetriever implements DocumentRetriever {
 
-    private static final String API_KEY = "bce-v3/ALTAK-BGhtegTFJkULJnGxHMkcc/f3ff4636793f90557908993ee2f0f4bdad68ac02";
+
+    private final String API_KEY;
 
     private final RestClient restClient;
 
-    public SearchEngineDocumentRetriever(RestClient.Builder restClientBuilder) {
+    public SearchEngineDocumentRetriever(
+            RestClient.Builder restClientBuilder,
+            @Value("${baidu.search-engine.api-key}")
+            String apiKey
+    ) {
         Assert.notNull(restClientBuilder, "restClientBuilder cannot be null");
+        this.API_KEY = apiKey;
         this.restClient = restClientBuilder
                 .baseUrl("https://qianfan.baidubce.com/v2/ai_search/chat/completions")
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + API_KEY)

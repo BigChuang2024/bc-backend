@@ -81,6 +81,11 @@ spec:
               name: oss-secrets
               key: access-key-secret
 
+        - name: SEARCH_ENGINE_APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: search-engine-api-key
+              key: search-engine-api-key
         # 应用配置
         - name: SPRING_PROFILES_ACTIVE
           value: "prod"
