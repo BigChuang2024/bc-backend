@@ -126,5 +126,5 @@ spec:
   ports:
   - port: 8080
     targetPort: 8080
-    nodePort: 31458
+    nodePort: 34635
   type: NodePort
