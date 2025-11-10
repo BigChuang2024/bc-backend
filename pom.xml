@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.4</version>
+        <version>3.5.7</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.haderacher</groupId>
@@ -28,9 +28,13 @@
     </scm>
     <properties>
         <java.version>17</java.version>
-        <spring-ai.version>1.0.1</spring-ai.version>
+        <spring-ai.version>1.0.3</spring-ai.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
+        </dependency>
 <!--       ali oss sdk begin   -->
         <dependency>
             <groupId>com.aliyun.oss</groupId>

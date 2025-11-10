@@ -12,7 +12,4 @@ spring:
 
 logging:
   level:
-    org.springframework.security: INFO
-    org.springframework.ai.vectorstore: INFO
-    com.haderacher.bcbackend: INFO
-    org.springframework.ai.deepseek: DEBUG
+    org.springframework.session : INFO

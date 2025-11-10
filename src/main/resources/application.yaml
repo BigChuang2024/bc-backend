@@ -86,6 +86,3 @@ management:
     web:
       exposure:
         include: "*"
-
-# 调试模式
-debug: true
