@@ -90,7 +90,7 @@ spec:
         - name: SPRING_PROFILES_ACTIVE
           value: "prod"
         - name: SPRING_JPA_HIBERNATE_DDL_AUTO
-          value: "update"
+          value: "create"
 
         # 健康检查
         livenessProbe:

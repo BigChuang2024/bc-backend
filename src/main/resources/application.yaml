@@ -6,6 +6,10 @@ spring:
     name: bc-backend
   profiles:
     active: local
+  sql:
+    init:
+      data-locations: classpath:db/data/*
+      mode: always
 
   # 数据库通用配置
   datasource:
@@ -18,6 +22,8 @@ spring:
     database: mysql
     hibernate:
       ddl-auto: ${JPA_DDL_AUTO}
+    # defer data source initialization until after any EntityManagerFactory beans have been created and initialized.
+    defer-datasource-initialization: true
 
   # Redis通用配置
   data:
