@@ -32,12 +32,6 @@ public class JobController {
         return ApiResponse.success(page);
     }
 
-    @GetMapping()
-    public ApiResponse<List<Job>> list() {
-        List<Job> all = jobService.findAll();
-        return ApiResponse.success(all);
-    }
-
     @GetMapping("/{id}")
     public ApiResponse<Job> getById(@PathVariable Long id) {
         Job job = jobService.findById(id);

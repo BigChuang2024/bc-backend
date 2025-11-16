@@ -27,13 +27,13 @@ spec:
           name: amqp
         - containerPort: 15672
           name: management
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
+#        resources:
+#          requests:
+#            memory: "512Mi"
+#            cpu: "250m"
+#          limits:
+#            memory: "1Gi"
+#            cpu: "500m"
 ---
 # RabbitMQ服务配置
 apiVersion: v1
