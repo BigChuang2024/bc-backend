@@ -106,13 +106,13 @@ spec:
           initialDelaySeconds: 60
           periodSeconds: 5
 
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
+#        resources:
+#          requests:
+#            memory: "1Gi"
+#            cpu: "500m"
+#          limits:
+#            memory: "2Gi"
+#            cpu: "1000m"
 ---
 # Spring Boot应用服务配置
 apiVersion: v1

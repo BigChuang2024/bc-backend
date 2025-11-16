@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: mongodb
-        image: mongo:6.0
+        image: mongo:8.2.2-rc0-noble
         env:
         - name: MONGO_INITDB_ROOT_USERNAME
           value: "root"

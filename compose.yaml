@@ -1,6 +1,6 @@
 services:
   mysql:
-    image: 'mysql:latest'
+    image: 'mysql:9.5.0'
     environment:
       - 'MYSQL_DATABASE=career_plan'
       - 'MYSQL_PASSWORD=secret'
@@ -9,24 +9,24 @@ services:
     ports:
       - '3306:3306'
   mongo:
-    image: mongo
+    image: mongo:8.2.2-rc0-noble
     ports:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
       MONGO_INITDB_DATABASE: bigchuang
-  mongo-express:
-    image: mongo-express
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
-      ME_CONFIG_BASICAUTH: true
+#  mongo-express:
+#    image: mongo-express
+#    ports:
+#      - "8081:8081"
+#    environment:
+#      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+#      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+#      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+#      ME_CONFIG_BASICAUTH: true
   redis:
-    image: redis/redis-stack:latest
+    image: redis/redis-stack:7.4.0-v8
     ports:
       - "6379:6379"
       - "8002:8002"
@@ -52,3 +52,15 @@ services:
 #volumes:
 #  rabbitmq_data:
 #    driver: local
+  neo4j:
+    image: neo4j:ubi9
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+      - NEO4J_PLUGINS=\[\"apoc\"\]
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    restart: always
