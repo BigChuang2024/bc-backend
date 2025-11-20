@@ -1,5 +1,5 @@
 // java
-package com.haderacher.bcbackend.mq;
+package com.haderacher.bcbackend.mq.consumer;
 
 import com.haderacher.bcbackend.config.RabbitConfiguration;
 import com.haderacher.bcbackend.model.ResumeContent;
@@ -34,7 +34,7 @@ public class ParseListener {
     private final RabbitTemplate rabbitTemplate;
     private final ResumeRepository resumeRepository;
 
-    @RabbitListener(queues = RabbitConfiguration.PARSE_QUEUE)
+    @RabbitListener(queues = RabbitConfiguration.RESUME_PARSE_QUEUE)
     public void onMessage(ResumeMessage msg) throws IOException {
         User user = User.builder().username(msg.getUsername()).build();
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, null));
@@ -57,12 +57,12 @@ public class ParseListener {
 
         // 发送解析完成消息，通知嵌入消费者
         ParseCompleteMessage complete = new ParseCompleteMessage(msg.getUsername(), saved.getId());
-        rabbitTemplate.convertAndSend(RabbitConfiguration.EXCHANGE, RabbitConfiguration.EMBED_ROUTING, complete);
+        rabbitTemplate.convertAndSend(RabbitConfiguration.RESUME_EXCHANGE, RabbitConfiguration.RESUME_EMBED_ROUTING, complete);
         log.info("已发送嵌入消息: {}", complete);
 
         // 发送提取结构化字段的请求，通知 ExtractListener
         ExtractRequestMessage extractReq = new ExtractRequestMessage(msg.getUsername(), saved.getId());
-        rabbitTemplate.convertAndSend(RabbitConfiguration.EXCHANGE, RabbitConfiguration.EXTRACT_ROUTING, extractReq);
+        rabbitTemplate.convertAndSend(RabbitConfiguration.RESUME_EXCHANGE, RabbitConfiguration.RESUME_EXTRACT_ROUTING, extractReq);
         log.info("已发送提取字段消息: {}", extractReq);
     }
 }

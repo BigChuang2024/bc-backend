@@ -1,6 +1,5 @@
 package com.haderacher.bcbackend.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.haderacher.bcbackend.config.RabbitConfiguration;
 import com.haderacher.bcbackend.dto.ResumeContentDto;
@@ -16,21 +15,14 @@ import com.haderacher.bcbackend.repository.ResumeRepository;
 import com.haderacher.bcbackend.service.reader.MyPagePdfDocumentReader;
 import com.haderacher.bcbackend.util.OSSUtil;
 import com.haderacher.bcbackend.dto.ResumeVo;
-import com.haderacher.bcbackend.model.valueobject.InternshipExperience;
-import com.haderacher.bcbackend.model.valueobject.WorkExperience;
-import com.haderacher.bcbackend.model.valueobject.ProjectExperience;
-import com.haderacher.bcbackend.model.valueobject.CompetitionExperience;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.AccessDeniedException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.document.Document;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,7 +30,6 @@ import java.io.IOException;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -74,7 +65,7 @@ public class ResumeService {
         resumeRepository.save(resume);
         log.info("简历元数据已保存至数据库，URL: {}", fileUrl);
         ResumeMessage msg = new ResumeMessage(fileUrl, file.getOriginalFilename(), UserService.getCurrentUserDetails().getUsername());
-        rabbitTemplate.convertAndSend(RabbitConfiguration.EXCHANGE, RabbitConfiguration.PARSE_ROUTING, msg);
+        rabbitTemplate.convertAndSend(RabbitConfiguration.RESUME_EXCHANGE, RabbitConfiguration.RESUME_PARSE_ROUTING, msg);
         log.info("已发送解析消息到 MQ: {}", msg);
         return fileUrl;
     }

@@ -1,4 +1,4 @@
-package com.haderacher.bcbackend.mq;
+package com.haderacher.bcbackend.mq.consumer;
 
 import com.haderacher.bcbackend.config.RabbitConfiguration;
 import com.haderacher.bcbackend.model.ResumeContent;
@@ -27,7 +27,7 @@ public class EmbedListener {
     private final TokenTextSplitter tokenTextSplitter = new TokenTextSplitter();
     private final VectorStore vectorStore;
 
-    @RabbitListener(queues = RabbitConfiguration.EMBED_QUEUE)
+    @RabbitListener(queues = RabbitConfiguration.RESUME_EMBED_QUEUE)
     public void onMessage(ParseCompleteMessage msg) {
         User user = User.builder().username(msg.getUsername()).build();
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, null));

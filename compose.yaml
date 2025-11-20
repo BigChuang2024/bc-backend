@@ -40,9 +40,7 @@ services:
       - RABBITMQ_DEFAULT_USER=user
       - RABBITMQ_DEFAULT_PASS=password
     ports:
-      # 5672: AMQP 协议端口，用于应用程序连接 RabbitMQ
       - "5672:5672"
-      # 15672: RabbitMQ 管理界面的 Web 端口
       - "15672:15672"
 #    volumes:
 #      - rabbitmq_data:/var/lib/rabbitmq
@@ -64,3 +62,8 @@ services:
       - "7474:7474"
       - "7687:7687"
     restart: always
+  ollama:
+    container_name: ollama
+    image: ollama/ollama
+    ports:
+      - "11434:11434"

@@ -1,4 +1,4 @@
-package com.haderacher.bcbackend.mq;
+package com.haderacher.bcbackend.mq.consumer;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -53,7 +53,7 @@ public class ExtractListener {
 
     private static final String CONTEXT_PLACEHOLDER = "context";
 
-    @RabbitListener(queues = RabbitConfiguration.EXTRACT_QUEUE)
+    @RabbitListener(queues = RabbitConfiguration.RESUME_EXTRACT_QUEUE)
     public void onMessage(ExtractRequestMessage msg) {
         User user = User.builder().username(msg.getUsername()).build();
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, null));
