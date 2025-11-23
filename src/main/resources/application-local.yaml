@@ -4,7 +4,7 @@
 
 spring:
   config:
-    import: optional:classpath:.env.properties
+    import: classpath:.env.properties
   # 本地环境特有配置 - 覆盖通用配置
   jpa:
     hibernate:
@@ -13,3 +13,6 @@ spring:
 logging:
   level:
     org.springframework.session : INFO
+
+jwt:
+  sessionTime: 9986400

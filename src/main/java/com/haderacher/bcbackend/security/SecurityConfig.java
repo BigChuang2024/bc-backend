@@ -32,13 +32,8 @@ public class SecurityConfig {
                         .requestMatchers("/students/register",
                                 "/students/login",
                                 "/actuator/*",
-                                "/ai/*",
                                 "/recruiters/register",
-                                "/recruiters/login",
-                                "jobs",
-                                "/jobs/*",
-                                "skills",
-                                "skills/*"
+                                "/recruiters/login"
                         ).permitAll()
                         .anyRequest().authenticated()
                 );

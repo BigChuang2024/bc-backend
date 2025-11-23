@@ -19,7 +19,7 @@ Spring Boot 后端应用 - 职业规划平台
 2. **配置环境变量**
    ```bash
    # 复制环境变量模板
-   cp .env.properties.example src/main/resources/.env.properties
+   cp .env.properties src/main/resources/.env.properties
 
    # 编辑 src/main/resources/.env.properties 文件，填入您的实际配置
    # 需要配置：API密钥、数据库密码、OSS凭据等
