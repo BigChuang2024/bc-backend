@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-public class OSSTest {
+public class OSSConfigurationTest {
 
     @Autowired
     private OSS ossClient;

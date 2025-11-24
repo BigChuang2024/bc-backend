@@ -1,5 +1,6 @@
 package com.haderacher.bcbackend.service.component;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.rag.Query;
@@ -20,8 +21,6 @@ public class SearchEngineDocumentRetrieverTest {
                         .text("热点新闻")
                                 .build();
 
-        List<Document> retrieve = searchEngineDocumentRetriever.retrieve(query);
-        retrieve.forEach(System.out::println);
-
+        Assertions.assertNotNull(searchEngineDocumentRetriever.retrieve(query));
     }
 }
