@@ -61,9 +61,31 @@ services:
     ports:
       - "7474:7474"
       - "7687:7687"
-    restart: always
   ollama:
     container_name: ollama
     image: ollama/ollama
     ports:
       - "11434:11434"
+  elasticsearch:
+    build:
+      context: ./middleware/es  # 指向包含 Dockerfile 的目录
+    container_name: job_es
+    environment:
+      - "discovery.type=single-node"    # 单节点模式
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # 限制内存，防止撑爆你的电脑
+      - "xpack.security.enabled=false"   # 开发环境关闭密码验证，省事
+      - "TZ: Asia/Shanghai"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+  kibana:
+    image: kibana:8.11.1
+    container_name: job_kibana
+    restart: always
+    depends_on:
+      - elasticsearch
+    environment:
+      - "ELASTICSEARCH_HOSTS=http://elasticsearch:9200" # 连接 ES
+      - "I18N_LOCALE=zh-CN" # 开启 Kibana 中文界面
+    ports:
+      - "5601:5601"
